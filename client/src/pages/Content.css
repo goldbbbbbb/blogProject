@@ -1,0 +1,35 @@
+.contentPage-container {
+    display: flex;
+    width: 60%;
+    height: 100vh;
+    flex-flow: column;
+}
+
+.contentPage-topic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+    font-size: 48px;
+    font-style: bold;
+}
+
+.contentPage-text {
+    display: flex;
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-bottom: 30px;
+}
+
+.contentPage-starAndComment-container {
+    display: flex;
+    flex-flow: row;
+    padding-left: 100px;
+    padding-right: 100px;
+    align-items: center;
+}
+
+.contentPage-starAndComment-like {
+    max-width: 24px;
+    max-height: 24px;
+}

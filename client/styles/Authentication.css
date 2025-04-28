@@ -1,0 +1,58 @@
+.auth-container {
+    display: flex;
+    height: 100vh;
+    /* put the content inside the container into center in x-axis && y-axis*/
+    justify-content: center;
+    align-items: center;
+    background-color: grey;
+}
+
+.auth-card-container {
+    display: flex;
+    width: 400px;
+    height: 60vh;
+    border-radius: 10px;
+    background-color: white;
+    padding: 50px 0 50px 0;
+    justify-content: center;
+}
+
+.auth-card {
+    display: flex;
+    max-width: 340px;
+}
+
+.auth-cardform {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+}
+
+.auth-cardform-logo {
+    display: flex;
+    height: 100px;
+    margin-bottom: 35px;
+}
+
+.auth-cardform-input {
+    display: flex;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 15px;
+}
+
+.auth-cardform-button {
+    display: flex;
+    justify-content: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: #606060;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.auth-text {
+    display: flex;
+    justify-content: right;
+}

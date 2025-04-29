@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../components/Header';
+import './Upload.css';
 
 const Uploadpage = () => {
 
@@ -42,50 +43,64 @@ const Uploadpage = () => {
                 alert('上傳成功！');
             }            
         } catch (errorMsg) {
-          // 處理網路錯誤或其他 fetch 過程中發生的錯誤
           console.error('登入請求錯誤:', errorMsg);             
         }
     }
     return (
         <>
             <Header />
-            <form onSubmit={handleSubmit}>
-                <div>輸入標題</div>
-                <input
-                    type='text'
-                    id='topic'
-                    value={topic}
-                    onChange = {onTopicChange}
-                >
-                </input>
-                <div>輸入內容</div>
-                <input
-                    type='textarea'
-                    id='content'
-                    value={content}
-                    onChange = {onContentChange}
-                >
-                </input>
-                <div>輸入類型</div>
-                <select
-                    id='category'
-                    value={category}
-                    onChange={onCategoryChange}
-                >
-                    <option value=''>請選擇</option>
-                    <option value='leetcode'>Leetcode題解</option>
-                    <option value='newtech'>最新科技</option>
-                </select>
-                <div>預設點讚數(僅供測試!)</div>
-                <input
-                    type='number'
-                    id='numoflike'
-                    value={numOfLike}
-                    onChange={onNumOfLikeChange}
-                >
-                </input>
-                <button>提交</button>
-            </form>
+            <div className='upload-session-container'>
+                <div className='upload-sessionCard-container'>
+                        <form className='upload-sessionContent-container' onSubmit={handleSubmit}>
+                            <div className='upload-sessionContent-topicAndSelectItems-container'>
+                                <div className='upload-sessionContent-items-topic'>
+                                    <input
+                                        type='text'
+                                        id='topic'
+                                        className='upload-sessionContent-items-topicbar'
+                                        value={topic}
+                                        placeholder='輸入標題'
+                                        onChange={onTopicChange}
+                                    />
+                                </div>
+                                <div className='upload-sessionContent-items-select'>
+                                    <select
+                                        id='category'
+                                        value={category}
+                                        onChange={onCategoryChange}
+                                    >
+                                        <option value=''>選擇分類</option>
+                                        <option value='leetcode'>Leetcode題解</option>
+                                        <option value='newtech'>最新科技</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className='upload-sessionContent-items-content'>
+                                <input
+                                    type='textarea'
+                                    id='content'
+                                    className='upload-sessionContent-items-contentarea'
+                                    placeholder='輸入內容'
+                                    value={content}
+                                    onChange={onContentChange}
+                                />
+                            </div>
+                            <div className='upload-sessionContent-items-content'> 
+                                <div>預設點讚數(僅供測試!)</div>
+                                    <input
+                                        type='number'
+                                        id='numoflike'
+                                        className='upload-sessionContent-items-likebar'
+                                        value={numOfLike}
+                                        onChange={onNumOfLikeChange}
+                                    />
+                            </div>
+                            <div className='upload-submit'> 
+                                <button className='upload-sessionContent-items-submitButton'>提交</button>
+                            </div>
+                        </form>
+                </div>
+            </div>
         </>
     )
 }

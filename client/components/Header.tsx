@@ -25,8 +25,7 @@ const Header = () => {
             </div>
             <div className='header-right-container'>
                 <button onClick={uploadClick}className='header-right-button'>上傳</button>
-                <button className='header-right-button'>通知</button>
-                <button className='header-right-button'>設定</button>
+                <button className='header-right-button'>用戶設定</button>
                 <button onClick={logOut} className='header-right-button'>登出</button>
             </div>
         </div>

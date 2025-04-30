@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../../components/Header';
 import './Upload.css';
+import { useParams } from 'react-router-dom';
 
 const Uploadpage = () => {
 
@@ -8,6 +9,9 @@ const Uploadpage = () => {
     const [content, setContent] = useState<string>('');
     const [category, setCategory] = useState<string>('');
     const [numOfLike, setNumOfLike] = useState<number>(0);
+
+    const author = localStorage.getItem('userid');
+    const {id} = useParams();
 
     const onTopicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTopic(event.target.value);
@@ -36,7 +40,7 @@ const Uploadpage = () => {
                 headers: {
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({topic, content, category, numOfLike})
+                body: JSON.stringify({topic, author, content, category, numOfLike})
             });
             const data = await response.json();
             if (data.success) {

@@ -1,0 +1,34 @@
+.postlist-container {
+    margin-top: 50px;
+    display: flex;
+    width: 80%;
+    flex-flow: column;
+}
+
+.postlist-item-topic {
+    display: flex;
+    border: none;
+    background: none;
+    font-size: 24px;
+    color: black;
+    justify-content: left;
+    border: 1px solid black;
+    padding: 12px;
+}
+
+.postlist-item-numOfLike-container {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    margin-left: auto;
+}
+
+.postlist-item-numOfLike-photo {
+    display: flex;
+    max-width: 24px;
+    max-height: 24px;
+}
+
+.postlist-item-numOfLike-text {
+    display: flex;
+}

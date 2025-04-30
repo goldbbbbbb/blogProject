@@ -1,5 +1,5 @@
 const express = require('express');
-const like = require('./like');
+const { ObjectId } = require('mongodb');
 
 module.exports = function(db) {
     const router = express.Router();
@@ -22,15 +22,17 @@ module.exports = function(db) {
         }
     });
 
-    router.get('/displayContent/:topic', async(req, res) => {
-        const topic = req.params.topic;
+    router.get('/displayContent/:id', async(req, res) => {
+        const strid = req.params.id;
+        let objectid = new ObjectId(strid);
+
         const username = req.query.username;
         try {
             const usersCollection = db.collection('posts');
-            const accordingContent = await usersCollection.findOne({topicName: topic});
+            const accordingContent = await usersCollection.findOne({_id: objectid});
             let likeStatus = false;
             const liked = await usersCollection.findOne({
-                topicName: topic,
+                _id: objectid,
                 likedBy: { $elemMatch: { username: username } }
             });
             if (liked) {  
@@ -43,12 +45,13 @@ module.exports = function(db) {
     });
 
     router.post('/upload', async(req, res) => {
-        const { topic, content, category, numOfLike } = req.body; 
+        const { topic, author, content, category, numOfLike } = req.body; 
         console.log('收到上傳請求:', { topic, content }); 
         try {
             const usersCollection = db.collection('posts');
             await usersCollection.insertOne({
                 topicName: topic,
+                author: author,
                 content: content,
                 category: category,
                 numOfLike: numOfLike,

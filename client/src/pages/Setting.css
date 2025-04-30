@@ -1,0 +1,27 @@
+.settingpage-container {
+    display: flex;
+    width: 100vh;
+    height: 100vh;
+    flex-direction: row;
+}
+
+.settingpage-navbar-container {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.settingpage-navbar-items {
+    padding: 20px;
+    border: 1px solid black;
+}
+
+.settingpage-display-container {
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-grow: 3;
+    flex-direction: column;
+    align-items: center;
+    background-color: grey;
+}

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import './Homepage.css'
 import { useNavigate } from 'react-router-dom';
-import ContentList from '../../components/HomePageContent';
+import PostList from '../../components/Postlist';
+import { post } from '../../types/Post';
 
 const Homepage = () => {
-    const [users, setUsers] = useState<any[]>([]);
+    const [allPosts, setAllPosts] = useState<post[]>([]);
     const [currCategory, setCurrCategory] = useState<string>('popular'); 
     const navigate = useNavigate();
 
@@ -14,24 +15,24 @@ const Homepage = () => {
     }
 
     useEffect(() => {
-        const fetchUsername = async () => {
+        const fetchAllPosts = async () => {
             try {
                 const response = await fetch(`http://localhost:3000/api/displayTopic?category=${currCategory}`, {
                     method: 'GET',
                 });
                 const data = await response.json();
                 if (data.success) {
-                    setUsers(data.postlist);
+                    setAllPosts(data.postlist);
                 }
             } catch (errorMsg) {
                 console.error('標題請求錯誤:', errorMsg);        
             }            
         }
-        fetchUsername();
+        fetchAllPosts();
     }, [currCategory]);
 
-    const moveToContent = (topic: string) => {
-        navigate(`/content/${topic}`);
+    const moveToContent = (id: string) => {
+        navigate(`/content/${id}`);
     }
 
     return (
@@ -44,7 +45,9 @@ const Homepage = () => {
                         <button onClick={() => changeCategory('leetcode')} className='homepage-content-navigationbar-item'>Leetcode題解</button>
                         <button onClick={() => changeCategory('newtech')} className='homepage-content-navigationbar-item'>最新AI科技</button>
                     </div>
-                        <ContentList users={users} moveToContent={moveToContent} />
+                    <div className="homepage-content-topic-container">
+                        <PostList posts={allPosts} moveToContent={moveToContent} />
+                    </div>
                 </div>
             </div>
         </>

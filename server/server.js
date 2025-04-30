@@ -8,6 +8,7 @@ const port = 3000;
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/post');
 const likeRoutes = require('./routes/like');
+const settingRoutes = require('./routes/setting');
 
 const mongoURI = 'mongodb://localhost:27017/blogDatabase';
 const client = new MongoClient(mongoURI);
@@ -40,6 +41,7 @@ connectDB().then(() => {
     app.use('/api', authRoutes(db));
     app.use('/api', postRoutes(db));
     app.use('/api', likeRoutes(db));
+    app.use('/api', settingRoutes(db));
     app.listen(port, () => {
       console.log(`後端伺服器正在監聽 http://localhost:${port}`);
     });

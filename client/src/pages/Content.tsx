@@ -3,18 +3,11 @@ import Header from '../../components/Header';
 import { useParams } from 'react-router-dom';
 import './Homepage.css';
 import './Content.css'
+import { post } from '../../types/Post';
 
 const Content = () => {
 
-    type post = {
-        _id: string;
-        topicName: string;
-        content: string;
-        numOfLike: number;
-        LikedBy: string[];
-    }
-
-    const {topic} = useParams();
+    const {id} = useParams();
     const [content, setContent] = useState<post>();
     const [updatedLike, setUpdatedLike] = useState<post>();
     const [likeStatus, setLikeStatus] = useState();
@@ -23,7 +16,8 @@ const Content = () => {
 
     const clickedLike = async () => {
         try {
-            const response = await fetch (`http://localhost:3000/api/addNumOfLike/${topic}`, {
+            console.log(id);
+            const response = await fetch (`http://localhost:3000/api/addNumOfLike/${id}`, {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,7 +36,7 @@ const Content = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/displayContent/${topic}?username=${username}`, {
+                const response = await fetch(`http://localhost:3000/api/displayContent/${id}?username=${username}`, {
                     method: 'get'
                 });
                 const data = await response.json();

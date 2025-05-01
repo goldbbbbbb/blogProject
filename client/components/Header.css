@@ -1,5 +1,5 @@
 .header-container {
-    height: 50px;
+    height: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -12,6 +12,29 @@
     display: flex;
     width: 200px;
     height: 100%;
+}
+
+.header-left-icon {
+    display: flex;
+    flex-grow: 1;
+}
+
+.header-left-searchbar-container {
+    display: flex;
+    flex-grow: 1;
+    border: 1px solid black;
+}
+
+.header-left-searchbar-textbox {
+    display: flex;
+    flex-grow: 3;
+    padding: 8px;
+    border: 0;
+}
+
+.header-left-searchbar-photo {
+    display: flex;
+    flex-grow: 1;
 }
 
 .header-right-container {

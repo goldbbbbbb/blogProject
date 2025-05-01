@@ -56,7 +56,16 @@
 .upload-sessionContent-items-contentarea {
     width: 100%;
     height: 20vh;
+    font-size: 16px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.upload-sessionContent-items-contentarea-notext {
+    width: 100%;
+    height: 20vh;
     text-align: center;
+    padding-top: 50px;
     font-size: 48px;
     box-sizing: border-box;
 }
@@ -69,9 +78,12 @@
 .upload-submit {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .upload-sessionContent-items-submitButton {
     width: 30%;
     padding: 12px;
+    margin-bottom: 20px;
 }

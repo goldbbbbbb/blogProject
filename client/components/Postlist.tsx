@@ -4,7 +4,7 @@ import './Postlist.css';
 
 interface ContentListprops {
     posts: post[];
-    moveToContent: (topic: string) => void;
+    moveToContent: (id: string) => void;
 }
 
 // display Posts in according Page

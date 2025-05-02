@@ -1,47 +1,33 @@
 import '../../styles/Authentication.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React from 'react';
+import ManageFormData from '../../components/ManageFormData'
 
 const Registerpage = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    // import those two functions to use
+    const {formData, OnInputChange} = ManageFormData();
 
     const navigate = useNavigate();
 
-    const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUsername(event.target.value);
-    }
-    const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(event.target.value);
-    } 
-    const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(event.target.value);
-    } 
-    
+    // post request to check the AC/Email/PW used for register is valid or not
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       try {
-        console.log('準備發送的數據:', { username, email, password });
-        console.log('username 的類型:', typeof username);
-        console.log('email 的類型:', typeof email);
-        console.log('password 的類型:', typeof password);
         const response = await fetch('http://localhost:3000/api/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({username, email, password}),
+          body: JSON.stringify({username: formData.username, email: formData.email, password: formData.password}),
         });
         const data = await response.json();
-        if (data.success) {
+        if (response.ok && data.success) {
           navigate('/success');
         } else {
-          alert('注冊失敗');
+          alert(data.message);
         }
       } catch (errorMsg) {
-          // 處理網路錯誤或其他 fetch 過程中發生的錯誤
           console.error('登入請求錯誤:', errorMsg);        
       }
     }
@@ -54,29 +40,32 @@ const Registerpage = () => {
                   <img alt='gdblandlogo' className='auth-cardform-logo' src='./logo.png'></img>
                   <input
                     type='text'
-                    id='username'
-                    value={username}
-                    onChange={onUsernameChange}
+                    name='username'
+                    value={formData.username || ''}
+                    onChange={OnInputChange}
                     className='auth-cardform-input' 
-                    placeholder='用戶名'>
+                    placeholder='用戶名'
+                    required>
                   </input>
                   <input 
                     type='email'
-                    id='email'
-                    value={email}
-                    onChange={onEmailChange}
+                    name='email'
+                    value={formData.email || ''}
+                    onChange={OnInputChange}
                     className='auth-cardform-input'
-                    placeholder='電郵'>
+                    placeholder='電郵'
+                    required>
                   </input>
                   <input
                     type='password' 
-                    id='password'
-                    value={password}
-                    onChange={onPasswordChange}
+                    name='password'
+                    value={formData.password || ''}
+                    onChange={OnInputChange}
                     className='auth-cardform-input'
-                    placeholder='密碼'>
+                    placeholder='密碼'
+                    required>
                   </input>
-                  <button type='submit' className = 'auth-cardform-button'>注冊</button>     
+                  <button type='submit' className ='auth-cardform-button'>注冊</button>     
                 </form>
                 <div className = 'auth-text'><Link to ='/'>已有帳號？立即登入</Link></div>              
               </div>         

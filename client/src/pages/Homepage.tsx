@@ -10,10 +10,12 @@ const Homepage = () => {
     const [currCategory, setCurrCategory] = useState<string>('popular'); 
     const navigate = useNavigate();
 
+    // click the button in navbar change the category
     const changeCategory = (category: string) => {
         setCurrCategory(category);
     }
 
+    // get request to get all post with same category
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
@@ -21,7 +23,7 @@ const Homepage = () => {
                     method: 'GET',
                 });
                 const data = await response.json();
-                if (data.success) {
+                if (response.ok && data.success) {
                     setAllPosts(data.postlist);
                 }
             } catch (errorMsg) {
@@ -31,6 +33,7 @@ const Homepage = () => {
         fetchAllPosts();
     }, [currCategory]);
 
+    // route to show content of post which clicked by user
     const moveToContent = (id: string) => {
         navigate(`/content/${id}`);
     }

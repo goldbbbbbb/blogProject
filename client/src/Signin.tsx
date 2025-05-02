@@ -2,46 +2,43 @@ import '../styles/Authentication.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import ManageFormData from '../components/ManageFormData'
 
 const Signin = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // import those two functions to use
+  const {formData, OnInputChange} = ManageFormData();
   const navigate = useNavigate();
 
+  // Auto-login if user logined before
   useEffect(() => {
     if (localStorage.getItem('userid') !== null) {
       navigate('/homepage')
     }
   }, [navigate]); 
 
-  const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-  }
-
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  } 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // 防止表單的預設提交行為 (重新載入頁面)    
+    // prevent reflash on the form before receive result of post request
+    event.preventDefault();    
 
+    // post request to check the AC/PW valid or not
     try {
       const response = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({username, password}),
+        body: JSON.stringify({username: formData.username, password: formData.password}),
       });
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success) {
+        alert(data.message);
         localStorage.setItem('userid', `${data.userId}`);
         navigate('/homepage');
       } else {
-        console.error('登入失敗:', data);
+        alert(data.message);
       }
     } catch (error) {
-          console.error('登入請求錯誤:', error);
+        console.error('登入請求錯誤:', error);
     }
   }
 
@@ -54,23 +51,25 @@ const Signin = () => {
                 <img alt='gdblandlogo' className='auth-cardform-logo' src='./logo.png'></img>
                 <input 
                   type='text' 
-                  id='username' 
-                  value={username}
-                  onChange={onUsernameChange}
+                  name='username' 
+                  value={formData.username || ''}
+                  onChange={OnInputChange}
                   className='auth-cardform-input' 
-                  placeholder='用戶名'>
+                  placeholder='用戶名'
+                  required>
                 </input>
                 <input 
                   type='password' 
-                  id='password' 
-                  value={password}
-                  onChange={onPasswordChange}
+                  name='password'
+                  value={formData.password || ''}
+                  onChange={OnInputChange}
                   className='auth-cardform-input'
-                  placeholder='密碼'>
+                  placeholder='密碼'
+                  required>
                 </input>
-                <button type='submit' className = 'auth-cardform-button'>登錄</button>     
+                <button type='submit' className='auth-cardform-button'>登錄</button>     
               </form>
-              <div className = 'auth-text'><Link to ='/register'>沒有帳號？立即注冊</Link></div>              
+              <div className='auth-text'><Link to ='/register'>沒有帳號？立即注冊</Link></div>              
             </div>         
           </div>
         </div>

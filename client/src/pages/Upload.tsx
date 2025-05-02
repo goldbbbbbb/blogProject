@@ -58,11 +58,6 @@ const Uploadpage = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!category) {
-            alert('請填寫類型');
-            return;
-        }
-
         try {
             const response = await fetch(`http://localhost:3000/api/upload/${id}`, {
                 method: 'post',
@@ -72,8 +67,10 @@ const Uploadpage = () => {
                 body: JSON.stringify({topic, author, content, category, numOfLike, action})
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && data.success) {
                 alert(`${data.action}成功！`);
+            } else {
+                alert(`${data.message}`)
             }            
         } catch (errorMsg) {
           console.error('登入請求錯誤:', errorMsg);             
@@ -94,6 +91,7 @@ const Uploadpage = () => {
                                         value={topic}
                                         placeholder='輸入標題'
                                         onChange={onTopicChange}
+                                        required
                                     />
                                 </div>
                                 <div className='upload-sessionContent-items-select'>
@@ -101,6 +99,7 @@ const Uploadpage = () => {
                                         id='category'
                                         value={category}
                                         onChange={onCategoryChange}
+                                        required
                                     >
                                         <option value=''>選擇分類</option>
                                         <option value='leetcode'>Leetcode題解</option>
@@ -115,6 +114,7 @@ const Uploadpage = () => {
                                     placeholder='輸入內容'
                                     value={content}
                                     onChange={onContentChange}
+                                    required
                                 />
                             </div>
                             <div className='upload-sessionContent-items-content'> 

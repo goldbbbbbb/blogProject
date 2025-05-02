@@ -18,6 +18,11 @@ const Header = () => {
         }
     }
 
+    const logoutRoute = () => {
+        localStorage.clear();
+        navigate('/');
+    }
+
     const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchKeyword(event.target.value);
     }
@@ -34,7 +39,7 @@ const Header = () => {
             <div className='header-right-container'>
                 <button onClick={() => route('upload')} className='header-right-button'>上傳</button>
                 <button onClick={() => route('setting')} className='header-right-button'>用戶設定</button>
-                <button onClick={() => route('')} className='header-right-button'>登出</button>
+                <button onClick={logoutRoute} className='header-right-button'>登出</button>
             </div>
         </div>
     )

@@ -14,6 +14,7 @@ const Content = () => {
 
     const username = localStorage.getItem('userid');
 
+    // Like function: send the userid to backend, for update numOfLike and likedList
     const clickedLike = async () => {
         try {
             console.log(id);
@@ -25,7 +26,7 @@ const Content = () => {
                 body: JSON.stringify({username}),
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && data.success) {
                 setUpdatedLike(data.updatedNumOfLike);
             } 
         } catch (errorMsg) {
@@ -33,6 +34,7 @@ const Content = () => {
         }
     }
 
+    // get request to load the element of clicked post
     useEffect(() => {
         const fetchContent = async () => {
             try {
@@ -40,7 +42,7 @@ const Content = () => {
                     method: 'get'
                 });
                 const data = await response.json();
-                if (data.success) {
+                if (response.ok && data.success) {
                     setContent(data.accordingContent);
                     setLikeStatus(data.likeStatus);
                 }

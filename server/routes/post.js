@@ -1,12 +1,13 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
+const verifyToken = require('../middleware/jwtVerify.js');
 
 module.exports = function(db) {
     const router = express.Router();
 
     // display the post which contain the keyword
     // query val: searchQuery (searched keyword)
-    router.get('/searchTopic', async(req, res) => {
+    router.get('/searchTopic', verifyToken, async(req, res) => {
         const searchQuery = req.query.q;
         try {
             const postsCollection = db.collection('posts');
@@ -22,7 +23,7 @@ module.exports = function(db) {
 
     // display the popular post OR post with same category
     // query val: category (category of post)
-    router.get('/displayTopic', async(req, res) => {
+    router.get('/displayTopic', verifyToken, async(req, res) => {
         const category = req.query.category;
         let postlist;
         try {
@@ -46,7 +47,7 @@ module.exports = function(db) {
     // route val: :id (ID of post)
     // query val: username (username of logined user)
     // likeStatus: boolean (define user liked the post or not)
-    router.get('/displayContent/:id', async(req, res) => {
+    router.get('/displayContent/:id', verifyToken, async(req, res) => {
         const strid = req.params.id;
         if (!ObjectId.isValid(strid)) {
             return res.status(400).json({success: false, message: 'ID格式錯誤，無權限遊覽此頁面'})
@@ -76,7 +77,7 @@ module.exports = function(db) {
     // route val: :id (ID of post)
     // :id exists ? edit and delete function : upload function
     // define edit/delete by value of action (click button in the form)
-    router.post('/upload/:id', async(req, res) => {
+    router.post('/upload/:id', verifyToken, async(req, res) => {
         const { topic, author, content, category, numOfLike, action } = req.body;
         const strid = req.params.id;
 

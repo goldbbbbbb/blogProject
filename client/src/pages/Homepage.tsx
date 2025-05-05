@@ -15,16 +15,27 @@ const Homepage = () => {
         setCurrCategory(category);
     }
 
+    const token = localStorage.getItem('token');
+
     // get request to get all post with same category
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
                 const response = await fetch(`http://localhost:3000/api/displayTopic?category=${currCategory}`, {
                     method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
                     setAllPosts(data.postlist);
+                } else if (data.invalidToken) {
+                    alert(data.message);
+                    localStorage.clear();
+                    navigate('/');
+                } else {
+                    alert(data.message);
                 }
             } catch (errorMsg) {
                 console.error('標題請求錯誤:', errorMsg);        

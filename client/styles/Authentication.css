@@ -39,7 +39,6 @@
     display: flex;
     padding-top: 6px;
     padding-bottom: 6px;
-    margin-bottom: 15px;
 }
 
 .auth-cardform-button {
@@ -49,6 +48,16 @@
     padding-bottom: 6px;
     background-color: #606060;
     color: white;
+    margin-bottom: 15px;
+}
+
+.auth-cardform-errormessage {
+    display: flex;
+    color: red;
+    font-size: 12px;
+}
+
+.auth-cardform-spacing {
     margin-bottom: 15px;
 }
 

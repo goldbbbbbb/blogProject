@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Homepage.css';
 import './Content.css'
 import { post } from '../../types/Post';
@@ -13,6 +13,9 @@ const Content = () => {
     const [likeStatus, setLikeStatus] = useState();
 
     const username = localStorage.getItem('userid');
+    const token = localStorage.getItem('token');
+
+    const navigate = useNavigate();
 
     // Like function: send the userid to backend, for update numOfLike and likedList
     const clickedLike = async () => {
@@ -22,13 +25,20 @@ const Content = () => {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({username}),
             });
             const data = await response.json();
             if (response.ok && data.success) {
                 setUpdatedLike(data.updatedNumOfLike);
-            } 
+            } else if (data.invalidToken) {
+                alert(data.message);
+                localStorage.clear();
+                navigate('/');
+            } else {
+                alert(data.message);
+            }
         } catch (errorMsg) {
             console.error('點讚功能發生錯誤:', errorMsg);
         }

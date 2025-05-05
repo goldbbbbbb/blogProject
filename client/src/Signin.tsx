@@ -33,6 +33,7 @@ const Signin = () => {
       if (response.ok && data.success) {
         alert(data.message);
         localStorage.setItem('userid', `${data.userId}`);
+        localStorage.setItem('token', `${data.token}`);
         navigate('/homepage');
       } else {
         alert(data.message);

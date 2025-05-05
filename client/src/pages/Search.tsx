@@ -8,6 +8,7 @@ const Searchtopic = () => {
     const {searchKeyword} = useParams<{ searchKeyword: string }>();
     const [searchResult, setSearchResult] = useState<post[]>([]);
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     const moveToContent = (id: string) => {
         navigate(`/content/${id}`);
@@ -18,11 +19,18 @@ const Searchtopic = () => {
             if (searchKeyword && searchKeyword.trim()) {
                 try {
                     const response = await fetch (`http://localhost:3000/api/searchTopic?q=${encodeURIComponent(searchKeyword)}`, {
-                        method: 'get'
+                        method: 'get',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     });
                     const data = await response.json();
-                    if (data.success) {
+                    if (response.ok && data.success) {
                         setSearchResult(data.searchResult);
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
                     }
                 } catch (errorMsg) {
                     console.log(`取得搜尋結果時發生錯誤，${errorMsg}`);

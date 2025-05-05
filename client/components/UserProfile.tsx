@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 import { user } from '../types/User';
 
@@ -7,21 +8,30 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({updateSection} : UserProfileProps) => {
+    const navigate = useNavigate();
     const [currIcon, setCurrIcon] = useState('');
     const [userData, setUserData] = useState<user | null>(null);
     const userid = localStorage.getItem('userid');
+    const token = localStorage.getItem('token');
 
     useEffect (() => {
         if (userid) {
             const getUserInfo = async () => {
                 try {
                     const response = await fetch (`http://localhost:3000/api/getUserInfo?userid=${userid}`, {
-                        method: 'get'
+                        method: 'get',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     });
                     const data = await response.json();
                     if (response.ok && data.success) {
                         setUserData(data.userData);
                         setCurrIcon(`https://blogdb-avatar.s3.ap-southeast-1.amazonaws.com/${data.userData.iconURL}`)
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
                     } else {
                         alert(data.message);
                     }

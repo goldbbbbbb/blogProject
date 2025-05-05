@@ -6,29 +6,33 @@ import ManageFormData from '../../components/ManageFormData'
 
 const Registerpage = () => {
     // import those two functions to use
-    const {formData, OnInputChange} = ManageFormData();
+    const {formData, errors, OnInputChange, validateAll} = ManageFormData();
 
     const navigate = useNavigate();
 
     // post request to check the AC/Email/PW used for register is valid or not
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      try {
-        const response = await fetch('http://localhost:3000/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({username: formData.username, email: formData.email, password: formData.password}),
-        });
-        const data = await response.json();
-        if (response.ok && data.success) {
-          navigate('/success');
-        } else {
-          alert(data.message);
+      if (!validateAll()) {
+        alert('請檢查所有輸入均已符合格式')
+      } else {
+        try {
+          const response = await fetch('http://localhost:3000/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({username: formData.username, email: formData.email, password: formData.password}),
+          });
+          const data = await response.json();
+          if (response.ok && data.success) {
+            navigate('/success');
+          } else {
+            alert(data.message);
+          }
+        } catch (errorMsg) {
+            console.error('登入請求錯誤:', errorMsg);        
         }
-      } catch (errorMsg) {
-          console.error('登入請求錯誤:', errorMsg);        
       }
     }
     return (
@@ -47,6 +51,10 @@ const Registerpage = () => {
                     placeholder='用戶名'
                     required>
                   </input>
+                  {errors.username && 
+                    <div className='auth-cardform-errormessage'>{errors.username}</div>
+                  }
+                  <div className='auth-cardform-spacing'></div>
                   <input 
                     type='email'
                     name='email'
@@ -56,6 +64,10 @@ const Registerpage = () => {
                     placeholder='電郵'
                     required>
                   </input>
+                  {errors.email && 
+                    <div className='auth-cardform-errormessage'>{errors.email}</div>
+                  }
+                  <div className='auth-cardform-spacing'></div>
                   <input
                     type='password' 
                     name='password'
@@ -65,6 +77,10 @@ const Registerpage = () => {
                     placeholder='密碼'
                     required>
                   </input>
+                  {errors.password && 
+                    <div className='auth-cardform-errormessage'>{errors.password}</div>
+                  }
+                  <div className='auth-cardform-spacing'></div>
                   <button type='submit' className ='auth-cardform-button'>注冊</button>     
                 </form>
                 <div className = 'auth-text'><Link to ='/'>已有帳號？立即登入</Link></div>              

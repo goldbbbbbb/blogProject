@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import './Upload.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Uploadpage = () => {
 
@@ -12,14 +12,19 @@ const Uploadpage = () => {
     const [action, setAction] = useState<string>('');
 
     const author = localStorage.getItem('userid');
+    const token = localStorage.getItem('token');
     const {id} = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAccordingPost = async () => {
             if (id) {
                 try {
                     const response = await fetch (`http://localhost:3000/api/displayContent/${id}`, {
-                        method: 'get'
+                        method: 'get',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
                     });
                     const data = await response.json();
                     if (data.success) {
@@ -27,6 +32,12 @@ const Uploadpage = () => {
                         setContent(data.accordingContent.content);
                         setCategory(data.accordingContent.category);
                         setNumOfLike(data.accordingContent.numOfLike);
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
+                    } else {
+                        alert(data.message);
                     }
                 } catch (errorMsg) {
                     console.error('內容請求錯誤:', errorMsg);
@@ -63,15 +74,20 @@ const Uploadpage = () => {
                 method: 'post',
                 headers: {
                     'content-type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({topic, author, content, category, numOfLike, action})
             });
             const data = await response.json();
             if (response.ok && data.success) {
                 alert(`${data.action}成功！`);
+            } else if (data.invalidToken) {
+                alert(data.message);
+                localStorage.clear();
+                navigate('/');
             } else {
-                alert(`${data.message}`)
-            }            
+                alert(data.message);
+            }           
         } catch (errorMsg) {
           console.error('登入請求錯誤:', errorMsg);             
         }

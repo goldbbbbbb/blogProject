@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './EditIcon.css';
 
@@ -7,20 +8,30 @@ interface UserProfileProps {
 }
 
 const Testpage = ({updateSection} : UserProfileProps) => {
-
+    const navigate = useNavigate();
     const [file, setFile] = useState<File | null>(null);
     const [currIcon, setCurrIcon] = useState<string>('');
     const userid = localStorage.getItem('userid');
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
       const getCurrIcon = async () => {
         try {
           const response = await fetch(`http://localhost:3000/api/getKeyOfIcon?userid=${userid}`, {
-            method: 'get' 
+            method: 'get',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            } 
           });
           const data = await response.json();
           if (response.ok && data.success) {
             setCurrIcon(`https://blogdb-avatar.s3.ap-southeast-1.amazonaws.com/${data.key}`)
+          } else if (data.invalidToken) {
+            alert(data.message);
+            localStorage.clear();
+            navigate('/');
+          } else {
+            alert(data.message);
           }
         } catch (errorMsg) {
           console.error(errorMsg);
@@ -61,6 +72,7 @@ const Testpage = ({updateSection} : UserProfileProps) => {
           method: 'post',
           headers: {
             'content-type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({userid, avatarKey})
         })
@@ -68,6 +80,10 @@ const Testpage = ({updateSection} : UserProfileProps) => {
         if (response.ok && data.success) {
           alert('成功上傳頭像');
           setCurrIcon(`https://blogdb-avatar.s3.ap-southeast-1.amazonaws.com/${avatarKey}`);
+        } else if (data.invalidToken) {
+          alert(data.message);
+          localStorage.clear();
+          navigate('/');
         } else {
           alert(data.message);
         }

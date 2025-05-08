@@ -23,9 +23,11 @@ module.exports = function(db) {
         }
     })
 
+    // get the info of user
+    // query val: username
     router.get('/getUserInfo', verifyToken, async (req, res) => {
-        const userid = req.query.userid;
         try {
+            const userid = req.query.userid;
             const userscollection = db.collection('users');
             const userData = await userscollection.findOne({username: userid});
             if (userData) {

@@ -17,7 +17,7 @@ module.exports = function(db) {
             res.status(200).json({success: true, searchResult});
         } catch (errorMsg) {
             console.error('取得搜尋結果時發生錯誤', errorMsg);
-            res.status(500).json({success: false, errorMsg});
+            res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
         }
     })
 
@@ -39,7 +39,7 @@ module.exports = function(db) {
             res.status(200).json({success: true, postlist}); 
         } catch (errorMsg) {
             console.error("查閱主頁時資料庫查詢錯誤:", errorMsg);
-            res.status(500).json({success: false, message: {errorMsg}});
+            res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
         }
     });
 
@@ -69,7 +69,7 @@ module.exports = function(db) {
             }
             return res.status(200).json({success: true, accordingContent, likeStatus});
         } catch (errorMsg) {
-            return res.status(500).json({success: false, message: {errorMsg}});
+            return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
         }
     });
 
@@ -77,73 +77,102 @@ module.exports = function(db) {
     // route val: :id (ID of post)
     // :id exists ? edit and delete function : upload function
     // define edit/delete by value of action (click button in the form)
-    router.post('/upload/:id', verifyToken, async(req, res) => {
-        const { topic, author, content, category, numOfLike, action } = req.body;
-        const strid = req.params.id;
+    router.post('/uploadPost', verifyToken, async(req, res) => {
+        const {topic, author, content, category, numOfLike} = req.body;
+        if (!topic || !author || !content || !category) {
+            return res.status(400).json({success: false, message: '請填寫所有欄位'});
+        }
+        if (typeof numOfLike !== 'number' || numOfLike < 0) {
+            return res.status(400).json({success: false, message: '請填寫正確的預設點讚數'});
+        }
+        const postsCollection = db.collection('posts');
+        console.log('收到上傳請求:', { topic, content });
+        try {
+            await postsCollection.insertOne({
+                topicName: topic,
+                author: author,
+                content: content,
+                category: category,
+                numOfLike: numOfLike,
+                likedBy: []
+            })
+            console.log('上傳成功！')
+            return res.status(201).json({success: true, action: '上傳'})
+        } catch (errorMsg) {
+            console.error("上傳時資料庫查詢錯誤:", errorMsg);
+            return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
+        }
+    });
+
+    router.patch('/editPost/:id', verifyToken, async(req, res) => {
+        const { topic, author, content, category, numOfLike} = req.body;
+        const strid = req.params.id; 
 
         if (!topic || !content || !author || !category) {
             return res.status(400).json({success: false, message: '請填寫所有欄位'});
         }
         if (typeof numOfLike !== 'number' || numOfLike < 0) {
             return res.status(400).json({success: false, message: '請填寫正確的預設點讚數'});
-        }
-        const postsCollection = db.collection('posts'); 
+        }       
+
         if (strid && strid !== 'undefined') {
             if (!ObjectId.isValid(strid)) {
-                return res.status(400).json({success: false, message: 'ID格式錯誤，無權限遊覽此頁面'})
+                return res.status(404).json({success: false, message: '文章ID格式不正確'})
             }
             let objectid = new ObjectId(strid);
+            const postsCollection = db.collection('posts');
             const accordingPost = await postsCollection.findOne({_id: objectid})
             if (author !== accordingPost.author) {
-                return res.status(403).json({success: false, message: '無權限編輯/刪除此文章'});
+                return res.status(403).json({success: false, message: '無權限編輯此文章'});
             }
-            if (action === 'edit') {
-                console.log('收到編輯請求:', { topic, content, strid });
-                try {
-                    await postsCollection.updateOne({_id: objectid}, {
-                        $set: {
-                            topicName: topic,
-                            content: content,
-                            category: category,
-                            numOfLike: numOfLike
-                        }
-                    });
-                    console.log('編輯成功！');
-                    return res.status(200).json({success: true, action: '編輯'});
-                } catch (errorMsg) {
-                    console.error("編輯時資料庫查詢錯誤:", errorMsg);
-                    return res.status(500).json({success: false, message: {errorMsg}});
-                }  
-            } else if (action === 'delete') {
-                console.log('收到刪除請求:', { topic, content, strid });
-                try {
-                    await postsCollection.deleteOne({_id: objectid});
-                    console.log('刪除成功！')
-                    return res.status(200).json({success: true, action: '刪除'});
-                } catch (errorMsg) {
-                    console.error("刪除時資料庫查詢錯誤:", errorMsg);
-                    return res.status(500).json({success: false, message: {errorMsg}});
-                }                
-            } 
-        } else {
-            console.log('收到上傳請求:', { topic, content });
+            if (!accordingPost) {
+                return res.status(404).json({success: false, message: '文章不存在'});
+            }
+            console.log('收到編輯請求:', { topic, content, strid });
             try {
-                await postsCollection.insertOne({
-                    topicName: topic,
-                    author: author,
-                    content: content,
-                    category: category,
-                    numOfLike: numOfLike,
-                    likedBy: []
-                })
-                console.log('上傳成功！')
-                return res.status(201).json({success: true, action: '上傳'})
+                await postsCollection.updateOne({_id: objectid}, {
+                    $set: {
+                        topicName: topic,
+                        content: content,
+                        category: category,
+                        numOfLike: numOfLike
+                    }
+                });
+                console.log('編輯成功！');
+                return res.status(200).json({success: true, action: '編輯'});
             } catch (errorMsg) {
-                console.error("上傳時資料庫查詢錯誤:", errorMsg);
-                return res.status(500).json({success: false, message: {errorMsg}});
+                console.error("編輯時資料庫查詢錯誤:", errorMsg);
+                return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
             }  
         }
-    })
+    });
+
+    router.delete('/deletePost/:id', verifyToken, async(req, res) => {
+        const strid = req.params.id;
+        if (strid && strid !== 'undefined') {
+            if (!ObjectId.isValid(strid)) {
+                return res.status(404).json({success: false, message: '文章ID格式不正確'})
+            }
+            let objectid = new ObjectId(strid);
+            const postsCollection = db.collection('posts');
+            const accordingPost = await postsCollection.findOne({_id: objectid})
+            if (author !== accordingPost.author) {
+                return res.status(403).json({success: false, message: '無權限編輯此文章'});
+            }
+            if (!accordingPost) {
+                return res.status(404).json({success: false, message: '文章不存在'});
+            }
+            console.log('收到刪除請求:', { topic, content, strid });
+            try {
+                await postsCollection.deleteOne({_id: objectid});
+                console.log('刪除成功！')
+                return res.status(200).json({success: true, action: '刪除'});
+            } catch (errorMsg) {
+                console.error("刪除時資料庫查詢錯誤:", errorMsg);
+                return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
+            }             
+        }
+    });
 
     return router;
 }

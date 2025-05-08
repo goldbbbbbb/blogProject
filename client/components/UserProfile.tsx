@@ -49,7 +49,7 @@ const UserProfile = ({updateSection} : UserProfileProps) => {
             {userData ?
                     <>
                         <div className='userProfile-icon-container'>
-                            <img className='usericon' src={userData.iconURL === '' ? '/defaultIcon.png' : currIcon}></img>
+                            <img className='usericon' src={userData.iconURL === ''? '/defaultIcon.png' : currIcon}></img>
                             <button onClick={() => updateSection('uploadOrEditIcon')}>更改頭像</button>
                         </div>
                         <div className='userProfile-data-container'>

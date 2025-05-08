@@ -21,15 +21,75 @@
     margin-bottom: 30px;
 }
 
-.contentPage-starAndComment-container {
+.contentPage-clicklike-container {
     display: flex;
     flex-flow: row;
     padding-left: 100px;
     padding-right: 100px;
+    margin-bottom: 50px;
     align-items: center;
 }
 
-.contentPage-starAndComment-like {
+.contentPage-clicklike-icon {
     max-width: 24px;
     max-height: 24px;
+}
+
+.contentPage-commentSession-container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 50px;
+}
+
+.contentPage-commentSession-input {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+}
+
+.contentPage-commentList-container {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid black;
+    min-height: 100px;
+    width: 100%;
+}
+
+.contentPage-commentList-userinfo-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.contentPage-commentList-userinfo-icon {
+    display: flex;
+    flex: 2;
+}
+
+.contentPage-commentList-userinfo-iconimage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.contentPage-commentList-userinfo-username {
+    display: flex;
+    flex: 1;
+}
+
+.contentPage-commentList-commentinfo-container {
+    display: flex;
+    flex: 7;
+    flex-direction: column;
+}
+
+.contentPage-commentList-commentinfo-time {
+    display: flex;
+    flex: 1;
+}
+
+.contentPage-commentList-commentinfo-comment {
+    display: flex;
+    flex: 3;
 }

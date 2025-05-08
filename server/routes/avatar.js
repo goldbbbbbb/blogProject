@@ -35,7 +35,7 @@ module.exports = function(db) {
         }
     });
 
-    router.post('/editAndStore-url', verifyToken, async (req, res) => {
+    router.patch('/storeUrl', verifyToken, async (req, res) => {
         try {
             const {userid, avatarKey} = req.body;
             

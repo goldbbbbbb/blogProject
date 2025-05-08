@@ -1,15 +1,16 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
+const verifyToken = require('../middleware/jwtVerify.js');
 
 module.exports = function(db) {
     const router = express.Router();
 
     // add/minus the num of like base on the user in the likeBy array or not
     // route val: strid (id of post)
-    router.post('/addNumOfLike/:id', async(req, res) => {
+    router.patch('/addNumOfLike/:id', verifyToken, async(req, res) => {
         const strid = req.params.id;
         if (!ObjectId.isValid(strid)) {
-            return res.status(400).json({success: false, message: 'ID格式錯誤，無權限遊覽此頁面'})
+            return res.status(400).json({success: false, message: 'ID格式錯誤, 無權限遊覽此頁面'})
         }
         let objectid = new ObjectId(strid);
         const { username } = req.body;
@@ -29,7 +30,7 @@ module.exports = function(db) {
             return res.status(200).json({success: true, updatedNumOfLike});
         } catch (errorMsg) {
             console.error("按讚時資料庫更新錯誤:", errorMsg);
-            return res.status(500).json({success: false, message: {errorMsg}});
+            return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
         }
     })
     

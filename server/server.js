@@ -10,6 +10,7 @@ const postRoutes = require('./routes/post');
 const likeRoutes = require('./routes/like');
 const settingRoutes = require('./routes/setting');
 const avatarRoutes = require('./routes/avatar');
+const commentRoutes = require('./routes/comment');
 
 const mongoURI = 'mongodb://localhost:27017/blogDatabase';
 const client = new MongoClient(mongoURI);
@@ -29,7 +30,7 @@ async function connectDB() {
   }
 
 // 中介軟體
-app.use(cors()); // 允許來自所有來源的跨域請求 (在開發中通常足夠)
+app.use(cors());
 app.use(express.json()); // 解析請求主體中的 JSON 資料
 
 // 掛載路由模組
@@ -41,6 +42,7 @@ connectDB().then(() => {
     app.use('/api', likeRoutes(db));
     app.use('/api', settingRoutes(db));
     app.use('/api', avatarRoutes(db));
+    app.use('/api', commentRoutes(db));
     
     app.listen(port, () => {
       console.log(`後端伺服器正在監聽 http://localhost:${port}`);

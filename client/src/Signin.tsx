@@ -11,7 +11,7 @@ const Signin = () => {
 
   // Auto-login if user logined before
   useEffect(() => {
-    if (localStorage.getItem('userid') !== null) {
+    if (localStorage.getItem('token') !== null) {
       navigate('/homepage')
     }
   }, [navigate]); 

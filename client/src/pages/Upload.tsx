@@ -68,30 +68,82 @@ const Uploadpage = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/upload/${id}`, {
-                method: 'post',
-                headers: {
-                    'content-type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({topic, author, content, category, numOfLike, action})
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                alert(`${data.action}成功！`);
-            } else if (data.invalidToken) {
-                alert(data.message);
-                localStorage.clear();
-                navigate('/');
-            } else {
-                alert(data.message);
-            }           
-        } catch (errorMsg) {
-          console.error('登入請求錯誤:', errorMsg);             
+        
+        switch (action) {
+            case '':
+                try {
+                    const response = await fetch(`http://localhost:3000/api/uploadPost`, {
+                        method: 'post',
+                        headers: {
+                            'content-type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({topic, author, content, category, numOfLike})
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        alert(`${data.action}成功！`);
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
+                    } else {
+                        alert(data.message);
+                    }           
+                } catch (errorMsg) {
+                    console.error('上傳請求錯誤:', errorMsg);             
+                }
+                break;
+            case 'edit':
+                try {
+                    const response = await fetch(`http://localhost:3000/api/editPost/${id}`, {
+                        method: 'patch',
+                        headers: {
+                            'content-type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({topic, author, content, category, numOfLike})
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        alert(`${data.action}成功！`);
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
+                    } else {
+                        alert(data.message);
+                    }           
+                } catch (errorMsg) {
+                    console.error('編輯請求錯誤:', errorMsg);             
+                }
+                break;
+            case 'delete':
+                try {
+                    const response = await fetch(`http://localhost:3000/api/deletePost/${id}`, {
+                        method: 'delete',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({author})
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        alert(`${data.action}成功！`);
+                    } else if (data.invalidToken) {
+                        alert(data.message);
+                        localStorage.clear();
+                        navigate('/');
+                    } else {
+                        alert(data.message);
+                    }           
+                } catch (errorMsg) {
+                    console.error('刪除請求錯誤:', errorMsg);             
+                }
+                break;
         }
     }
+
     return (
         <>
             <Header />

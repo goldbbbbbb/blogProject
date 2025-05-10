@@ -4,8 +4,9 @@ import Header from '../../components/Header';
 import './Setting.css';
 import PostList from '../../components/Postlist';
 import { post } from '../../types/Post';
-import UserProfile from '../../components/UserProfile';
-import TestPage from '../../components/EditIcon';
+import UserProfile from '../../components/settingPage/UserProfile';
+import EditIconComponent from '../../components/settingPage/userProfile_components/EditIcon';
+import EditPasswordComponent from '../../components/settingPage/userProfile_components/EditPassword';
 
 
 const Usersettingpage = () => {
@@ -59,8 +60,9 @@ const Usersettingpage = () => {
                 </div>
                 <div className='settingpage-display-container'>
                     {currSection === 'profile' && <UserProfile updateSection={updateSection}/>}
-                    {currSection === 'uploadOrEditIcon' && <TestPage updateSection={updateSection}/>}
+                    {currSection === 'uploadOrEditIcon' && <EditIconComponent updateSection={updateSection}/>}
                     {currSection === 'editOrDeletePost' && <PostList posts={postHistory} moveToContent={moveToEdit} />}
+                    {currSection === 'editPassword' && <EditPasswordComponent updateSection={updateSection}/>}
                 </div>
             </div>
         </>

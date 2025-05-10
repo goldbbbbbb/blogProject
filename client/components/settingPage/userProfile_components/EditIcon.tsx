@@ -7,7 +7,7 @@ interface UserProfileProps {
   updateSection: (section: string) => void;
 }
 
-const Testpage = ({updateSection} : UserProfileProps) => {
+const EditIconComponent = ({updateSection} : UserProfileProps) => {
     const navigate = useNavigate();
     const [file, setFile] = useState<File | null>(null);
     const [currIcon, setCurrIcon] = useState<string>('');
@@ -133,4 +133,4 @@ const Testpage = ({updateSection} : UserProfileProps) => {
     )
 }
 
-export default Testpage;
+export default EditIconComponent;

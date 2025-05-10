@@ -1,0 +1,53 @@
+.userProfile-session-container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+    justify-content: center;
+    align-items: center; 
+}
+
+.usericon {
+    max-height: 200px;
+}
+
+.userProfile-form-container {
+    display: flex;
+    width: 70%;
+    height: 70%;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: white;
+    flex-direction: column;
+}
+
+.userProfile-form-row-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    border-bottom: 1px solid grey;
+}
+
+.userProfile-form-row-items {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.userProfile-form-row-button {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.userProfile-form-row-button-notActive {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}

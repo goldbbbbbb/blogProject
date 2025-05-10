@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const verifyToken = require('../middleware/jwtVerify.js');
 
 module.exports = function(db) {
     const router = express.Router();
@@ -51,6 +52,32 @@ module.exports = function(db) {
             console.error("登入時資料庫查詢錯誤:", errorMsg);
             return res.status(500).json({ success: false, message: '伺服器發生錯誤，請稍後再試' });
         }
+    });
+
+    router.patch('/editPassword', verifyToken, async (req, res) => {
+        const {userid, oldPassword, newPassword} = req.body;
+        
+        if (!validatePassword(oldPassword) || !validatePassword(newPassword)) {
+            console.error('密碼不存在 或 密碼格式不符合要求')
+            return res.status(400).json({success: false, message: '密碼不存在 或 密碼格式不符合要求'});              
+        }
+
+        try {
+            const usersCollection = db.collection('users');
+            const user = await usersCollection.findOne({username: userid});
+            if (!user) {
+                return res.status(403).json({success: false, message: '用戶不存在'});
+            }
+            if (user && user.password === oldPassword) {
+                await usersCollection.updateOne({username: userid}, {$set: {password: newPassword}});
+                return res.status(200).json({success: true})
+            } else {
+                return res.status(401).json({success: false, message: '無效的用戶名或密碼'});
+            }            
+        } catch (errorMsg) {
+            console.error("注冊時資料庫查詢錯誤:", errorMsg);
+            return res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
+        }       
     });
 
     // register function

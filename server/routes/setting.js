@@ -26,8 +26,8 @@ module.exports = function(db) {
     // get the info of user
     // query val: username
     router.get('/getUserInfo', verifyToken, async (req, res) => {
+        const userid = req.query.userid;
         try {
-            const userid = req.query.userid;
             const userscollection = db.collection('users');
             const userData = await userscollection.findOne({username: userid});
             if (userData) {
@@ -39,6 +39,58 @@ module.exports = function(db) {
         } catch (errorMsg) {
             console.error('取得資料失敗', errorMsg);
             res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
+        }
+    })
+
+    // edit the info of user
+    // query val: username
+    // those element are optional, no need to check exist or not
+    router.patch('/editUserInfo', verifyToken, async (req, res) => {
+        const {gender, birthday, summary, workexperience, education, userid} = req.body;
+        try {
+            const userscollection = db.collection('users');
+            const userData = await userscollection.findOne({username: userid});
+            if (!userData) {
+                res.status(403).json({success: false, message: '使用者不存在'});
+            } else {
+                await userscollection.updateOne({username: userid}, {$set: {
+                    gender: gender,
+                    birthday: birthday,
+                    summary: summary,
+                    workexperience: workexperience,
+                    education, education
+                }});
+                res.status(200).json({success: true});
+            }
+        } catch (errorMsg) {
+            console.error('修改用戶資料失敗', errorMsg);
+            res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
+        }
+    })
+
+    // get the datacollection of user
+    // query val: username
+    router.get('/getUserDataCollection', verifyToken, async (req, res) => {
+        const userid = req.query.userid;
+        try {
+            const userscollection = db.collection('users');
+            const userData = await userscollection.findOne({username: userid});
+            if (!userData) {
+                return res.status(403).json({success: false, message: '使用者不存在'});
+            }
+            const postscollection = db.collection('posts');
+            const commentscollection = db.collection('comments'); 
+            const postStats = await postscollection.aggregate([{$match: {author: userid}}, {$group: {_id: null, totalPost: {$sum: 1}, totalLike: {$sum: '$numOfLike'}}}]).toArray();
+            const commentStats = await commentscollection.aggregate([{$match: {username: userid }}, {$count: 'totalComment'}]).toArray();
+            
+            const totalLike = postStats[0]?.totalLike || 0;
+            const totalPost = postStats[0]?.totalPost || 0;
+            const totalComment = commentStats[0]?.totalComment || 0;
+            console.log(`取得數據統計成功`);
+            return res.status(200).json({success: true, totalLike, totalPost, totalComment});
+        } catch (errorMsg) {
+            console.error('取得資料失敗', errorMsg);
+            return res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});            
         }
     })
 

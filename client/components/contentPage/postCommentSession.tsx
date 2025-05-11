@@ -24,7 +24,6 @@ const PostCommentSession = ({id, userData}: {id: string, userData: user | null})
                 const data = await response.json();
                 if (response.ok && data.success) {
                     setCommentList(data.commentList);
-                    setUpdateComment(data.time); 
                 } else if (data.invalidToken) {
                     alert(data.message);
                     localStorage.clear();
@@ -38,7 +37,7 @@ const PostCommentSession = ({id, userData}: {id: string, userData: user | null})
             }
         }
         fetchCommentSession();
-    }, []);
+    }, [updateComment]);
 
     // keep the content of ccomment before submit
     const OnInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +63,7 @@ const PostCommentSession = ({id, userData}: {id: string, userData: user | null})
             const data = await response.json();
             if (response.ok && data.success) {
                 alert('上傳留言成功');
+                setUpdateComment(data.time);
             } else if (data.invalidToken) {
                 alert(data.message);
                 localStorage.clear();

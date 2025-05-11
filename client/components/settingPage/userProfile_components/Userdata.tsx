@@ -6,6 +6,7 @@ interface UserDataComponentProps {
     updateSection: (section: string) => void;
 }
 
+// display the userinfo
 const UserDataComponent = ({userData, updateSection}: UserDataComponentProps) => {
     return (
         <div className='userProfile-session-container'>

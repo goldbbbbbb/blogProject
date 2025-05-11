@@ -17,7 +17,7 @@ const PostContentSession = (
     return (
         <>
             <div className='contentPage-topic'>{content.topicName}</div>
-            <div className='contentPage-text'>{content.content}</div>
+            <div className='contentPage-text' dangerouslySetInnerHTML={{ __html: content.content }}/>
             <div className='contentPage-clicklike-container'>
                 <img className='contentPage-clicklike-icon' onClick={onLike} src={likeStatus === true ? '/thumbs-up.png' : '/thumbs-up-grey.png'}></img>
                 {updatedLike ? (

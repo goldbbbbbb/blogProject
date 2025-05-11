@@ -5,6 +5,7 @@ interface DataCollectionComponentProps {
     userDataCollection: userCollection;
 }
 
+// display the dataCollection of user
 const DataCollectionComponent = ({userDataCollection}: DataCollectionComponentProps) => {
     return (
         <div className='userProfile-session-container'>

@@ -8,6 +8,7 @@ interface UserInfoComponentProps {
     originalUserData: user;
 }
 
+// display the userinfo
 const UserInfoComponent = ({userData, setUserData, originalUserData}: UserInfoComponentProps) => {
     const [formStatus, setFormStatus] = useState('display');
     const userid = localStorage.getItem('userid');
@@ -15,6 +16,7 @@ const UserInfoComponent = ({userData, setUserData, originalUserData}: UserInfoCo
 
     const navigate = useNavigate();
 
+    // when user cancel the edit, replace the data which got by the get request
     const changeStatus = (status: string) => {
         setFormStatus(status);
         if (status === 'display') {
@@ -22,6 +24,7 @@ const UserInfoComponent = ({userData, setUserData, originalUserData}: UserInfoCo
         }
     }
 
+    // keep the user input during edit
     const OnInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
         setUserData(prev => ({
@@ -31,6 +34,8 @@ const UserInfoComponent = ({userData, setUserData, originalUserData}: UserInfoCo
         }));
     };
 
+    // submit the PATCH request
+    // no need verify the input because those input are not required
     const onSubmit = async () => {
         try {
             const response = await fetch ('http://localhost:3000/api/editUserInfo', {

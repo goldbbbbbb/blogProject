@@ -5,7 +5,6 @@ import './Homepage.css';
 import './Content.css'
 import { post } from '../../types/Post';
 import { user } from '../../types/User';
-import { comment } from '../../types/Comment';
 import UserInfoRequest from '../../components/UserInfoRequest';
 import PostContentSession from '../../components/contentPage/postContentSession';
 import PostCommentSession from '../../components/contentPage/postCommentSession';
@@ -17,9 +16,6 @@ const Content = () => {
     const [updatedLike, setUpdatedLike] = useState<post>();
     const [likeStatus, setLikeStatus] = useState<boolean>(false);
     const [userData, setUserData] = useState<user | null>(null);
-    const [comment, setComment] = useState('');
-    const [commentList, setCommentList] = useState<comment[]>([]);
-    const [updateComment, setUpdateComment] = useState('');
     const username = localStorage.getItem('userid');
     const token = localStorage.getItem('token');
 

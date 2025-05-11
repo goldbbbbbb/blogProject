@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 // validate function
 // name: key(username, email, password) value: userinput in key
-const validateField = (name: string, value: string): string => {
+export const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'username':
         if (!value) return '用戶名不能為空';
@@ -15,6 +15,8 @@ const validateField = (name: string, value: string): string => {
         return '';
       
       case 'password':
+      case 'oldPassword':
+      case 'newPassword':
         if (!value) return '密碼不能為空';
         if (value.length < 8) return '密碼至少需要8個字符';
         if (!/[A-Z]/.test(value)) return '密碼需要包含至少一個大寫字母';

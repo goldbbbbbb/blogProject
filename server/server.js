@@ -31,7 +31,7 @@ async function connectDB() {
 
 // 中介軟體
 app.use(cors());
-app.use(express.json()); // 解析請求主體中的 JSON 資料
+app.use(express.json());
 
 // 掛載路由模組
 // 所有來自 './routes/auth' 的路由都會以 '/api' 作為前綴

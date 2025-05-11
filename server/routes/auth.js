@@ -54,12 +54,20 @@ module.exports = function(db) {
         }
     });
 
+    // editPasword function
+    // verify the input exist or not => verify the password valid or not
+    // verify the user exist or not
+    // verify the password exist or not
     router.patch('/editPassword', verifyToken, async (req, res) => {
         const {userid, oldPassword, newPassword} = req.body;
         
+        if (!userid || oldPassword === '' || newPassword === '') {
+            return res.status(400).json({success: false, message: '缺少必要欄位'});
+        }
+
         if (!validatePassword(oldPassword) || !validatePassword(newPassword)) {
-            console.error('密碼不存在 或 密碼格式不符合要求')
-            return res.status(400).json({success: false, message: '密碼不存在 或 密碼格式不符合要求'});              
+            console.error('密碼格式不符合要求')
+            return res.status(400).json({success: false, message: '密碼格式不符合要求'});              
         }
 
         try {

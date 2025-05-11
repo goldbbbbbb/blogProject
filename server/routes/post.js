@@ -50,7 +50,7 @@ module.exports = function(db) {
     router.get('/displayContent/:id', verifyToken, async(req, res) => {
         const strid = req.params.id;
         if (!ObjectId.isValid(strid)) {
-            return res.status(400).json({success: false, message: 'ID格式錯誤，無權限遊覽此頁面'})
+            return res.status(400).json({success: false, message: 'ID格式錯誤, 無權限遊覽此頁面'})
         }
         let objectid = new ObjectId(strid);
         const username = req.query.username;
@@ -74,7 +74,6 @@ module.exports = function(db) {
     });
 
     // upload, edit and delete function
-    // route val: :id (ID of post)
     // :id exists ? edit and delete function : upload function
     // define edit/delete by value of action (click button in the form)
     router.post('/uploadPost', verifyToken, async(req, res) => {
@@ -104,9 +103,12 @@ module.exports = function(db) {
         }
     });
 
+    // edit function
+    // route val: :id (ID of post)
+    // check the input exist or not => check the input valid or not
     router.patch('/editPost/:id', verifyToken, async(req, res) => {
-        const { topic, author, content, category, numOfLike} = req.body;
-        const strid = req.params.id; 
+        const {id} = req.params;
+        const {topic, author, content, category, numOfLike} = req.body;
 
         if (!topic || !content || !author || !category) {
             return res.status(400).json({success: false, message: '請填寫所有欄位'});
@@ -115,11 +117,11 @@ module.exports = function(db) {
             return res.status(400).json({success: false, message: '請填寫正確的預設點讚數'});
         }       
 
-        if (strid && strid !== 'undefined') {
-            if (!ObjectId.isValid(strid)) {
+        if (id && id !== 'undefined') {
+            if (!ObjectId.isValid(id)) {
                 return res.status(404).json({success: false, message: '文章ID格式不正確'})
             }
-            let objectid = new ObjectId(strid);
+            let objectid = ObjectId.createFromHexString(id);
             const postsCollection = db.collection('posts');
             const accordingPost = await postsCollection.findOne({_id: objectid})
             if (author !== accordingPost.author) {
@@ -128,7 +130,7 @@ module.exports = function(db) {
             if (!accordingPost) {
                 return res.status(404).json({success: false, message: '文章不存在'});
             }
-            console.log('收到編輯請求:', { topic, content, strid });
+            console.log('收到編輯請求:', { topic, content, id });
             try {
                 await postsCollection.updateOne({_id: objectid}, {
                     $set: {
@@ -147,13 +149,17 @@ module.exports = function(db) {
         }
     });
 
+    // delete function
+    // route val: :id (ID of post)
+    // check the input exist or not => check the input valid or not
     router.delete('/deletePost/:id', verifyToken, async(req, res) => {
-        const strid = req.params.id;
-        if (strid && strid !== 'undefined') {
-            if (!ObjectId.isValid(strid)) {
+        const {id} = req.params;
+        const {author} = req.body;
+        if (id && id !== 'undefined') {
+            if (!ObjectId.isValid(id)) {
                 return res.status(404).json({success: false, message: '文章ID格式不正確'})
             }
-            let objectid = new ObjectId(strid);
+            let objectid = ObjectId.createFromHexString(id);
             const postsCollection = db.collection('posts');
             const accordingPost = await postsCollection.findOne({_id: objectid})
             if (author !== accordingPost.author) {
@@ -162,7 +168,7 @@ module.exports = function(db) {
             if (!accordingPost) {
                 return res.status(404).json({success: false, message: '文章不存在'});
             }
-            console.log('收到刪除請求:', { topic, content, strid });
+            console.log('收到刪除請求:', {id});
             try {
                 await postsCollection.deleteOne({_id: objectid});
                 console.log('刪除成功！')

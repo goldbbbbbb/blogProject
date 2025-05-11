@@ -32,6 +32,8 @@ const UserProfile = ({updateSection} : UserProfileProps) => {
     const userid = localStorage.getItem('userid');
     const token = localStorage.getItem('token');
 
+    // get request to get the userinfo
+    // store the copy of userinfo into originalUserData to replace the data when user cancel the edit request
     useEffect (() => {
         if (userid) {
             const getUserInfo = async () => {
@@ -63,6 +65,7 @@ const UserProfile = ({updateSection} : UserProfileProps) => {
         }
     }, [userid]);
 
+    // get request to get the dataCollection of user
     useEffect (() => {
         if (userid) {
             const getUserDataCollection = async () => {

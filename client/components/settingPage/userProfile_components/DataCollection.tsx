@@ -22,6 +22,10 @@ const DataCollectionComponent = ({userDataCollection}: DataCollectionComponentPr
                     <div className='userProfile-form-row-items'>用戶總留言數為</div>
                     <div className='userProfile-form-row-items'>{userDataCollection.totalComment}</div>
                 </div>
+                <div className='userProfile-form-row-container'>
+                    <div className='userProfile-form-row-items'>用戶總被收藏數為</div>
+                    <div className='userProfile-form-row-items'>{userDataCollection.totalBookmark}</div>
+                </div>
             </div>
         </div>
     )

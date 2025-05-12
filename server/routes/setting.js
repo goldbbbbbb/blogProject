@@ -6,22 +6,34 @@ module.exports = function(db) {
 
     // get the post history of user
     // query val: username
-    router.get('/setting', verifyToken, async(req, res) => {
+    router.get('/getHistoryPost', verifyToken, async(req, res) => {
         try {
             const username = req.query.username;
             const postsCollection = db.collection('posts');
             const postHistory = await postsCollection.find({author: username}).toArray();
-            if (postHistory) {
-                console.log(`已取得 ${username} 的歷史貼文`);
-                return res.status(200).json({success: true, postHistory})
-            } else {
-                return res.status(403).json({success: false, message: '使用者不存在'})
-            }
+            console.log(`已取得 ${username} 的 ${postHistory.length} 條歷史貼文`);
+            return res.status(200).json({success: true, postHistory});
         } catch (errorMsg) {
             console.error('取得貼文失敗', errorMsg);
             res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
         }
     })
+
+    // get the bookmarked list of user
+    // query val: username
+    router.get('/getBookmarkedPost', verifyToken, async(req, res) => {
+        try {
+            const username = req.query.username;
+            const postsCollection = db.collection('posts');
+            const bookmarkedPostlist = await postsCollection.find({bookmarkedBy: username}).toArray();
+            console.log(`已取得 ${username} 的 ${bookmarkedPostlist.length} 條收藏貼文`);
+            return res.status(200).json({success: true, bookmarkedPostlist});
+        } catch (errorMsg) {
+            console.error('取得貼文失敗', errorMsg);
+            res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
+        }
+    })
+
 
     // get the info of user
     // query val: username
@@ -80,14 +92,15 @@ module.exports = function(db) {
             }
             const postscollection = db.collection('posts');
             const commentscollection = db.collection('comments'); 
-            const postStats = await postscollection.aggregate([{$match: {author: userid}}, {$group: {_id: null, totalPost: {$sum: 1}, totalLike: {$sum: '$numOfLike'}}}]).toArray();
+            const postStats = await postscollection.aggregate([{$match: {author: userid}}, {$group: {_id: null, totalPost: {$sum: 1}, totalLike: {$sum: '$numOfLike'}, totalBookmark: {$sum: '$numOfBookmark'}}}]).toArray();
             const commentStats = await commentscollection.aggregate([{$match: {username: userid }}, {$count: 'totalComment'}]).toArray();
             
             const totalLike = postStats[0]?.totalLike || 0;
             const totalPost = postStats[0]?.totalPost || 0;
+            const totalBookmark = postStats[0]?.totalBookmark || 0;
             const totalComment = commentStats[0]?.totalComment || 0;
             console.log(`取得數據統計成功`);
-            return res.status(200).json({success: true, totalLike, totalPost, totalComment});
+            return res.status(200).json({success: true, totalLike, totalPost, totalComment, totalBookmark});
         } catch (errorMsg) {
             console.error('取得資料失敗', errorMsg);
             return res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});            

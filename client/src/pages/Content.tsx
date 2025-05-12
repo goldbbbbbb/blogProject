@@ -13,8 +13,8 @@ const Content = () => {
 
     const {id} = useParams();
     const [content, setContent] = useState<post>();
-    const [updatedLike, setUpdatedLike] = useState<post>();
     const [likeStatus, setLikeStatus] = useState<boolean>(false);
+    const [bookmarkStatus, setBookmarkStatus] = useState<boolean>(false);
     const [userData, setUserData] = useState<user | null>(null);
     const username = localStorage.getItem('userid');
     const token = localStorage.getItem('token');
@@ -35,6 +35,7 @@ const Content = () => {
                 if (response.ok && data.success) {
                     setContent(data.accordingContent);
                     setLikeStatus(data.likeStatus);
+                    setBookmarkStatus(data.bookmarkStatus);
                 } else if (data.invalidToken) {
                     alert(data.message);
                     localStorage.clear();
@@ -48,33 +49,7 @@ const Content = () => {
             }
         }
         fetchContent();
-    }, [updatedLike]);
-
-    const clickedLike = async () => {
-        try {
-            console.log(id);
-            const response = await fetch (`http://localhost:3000/api/addNumOfLike/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({username}),
-            });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setUpdatedLike(data.updatedNumOfLike);
-            } else if (data.invalidToken) {
-                alert(data.message);
-                localStorage.clear();
-                navigate('/');
-            } else {
-                alert(data.message);
-            }
-        } catch (errorMsg) {
-            console.error('點讚功能發生錯誤:', errorMsg);
-        }
-    }
+    }, [likeStatus, bookmarkStatus]);
 
     return (
         <>
@@ -83,7 +58,7 @@ const Content = () => {
             {content?
                     <div className='homepage-container'>
                         <div className='contentPage-container'>
-                            <PostContentSession content={content} likeStatus={likeStatus} updatedLike={updatedLike} onLike={clickedLike}/>
+                            <PostContentSession id={id!} content={content} likeStatus={likeStatus} setLikeStatus={setLikeStatus} bookmarkStatus={bookmarkStatus} setBookmarkStatus={setBookmarkStatus}/>
                             <PostCommentSession id={id!} userData={userData}/> 
                         </div>
                     </div>

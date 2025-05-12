@@ -19,14 +19,22 @@ const PostList = ({ posts, moveToContent }: ContentListprops) => (
           >
             {post.topicName}
           </button>
-          <div className='postlist-item-numOfLike-container'>
+          <div className='postlist-item-likeAndBookmark-container'>
             <img
-              className='postlist-item-numOfLike-photo'
+              className='postlist-item-likeAndBookmark-photo'
               alt='like'
               src='/thumbs-up.png'
             />
-            <div className='postlist-item-numOfLike-text'>
+            <div className='postlist-item-likeAndBookmark-text'>
               {post.numOfLike}
+            </div>
+            <img
+              className='postlist-item-likeAndBookmark-photo'
+              alt='bookmark'
+              src='/star.png'
+            />
+            <div className='postlist-item-likeAndBookmark-text'>
+              {post.numOfBookmark}
             </div>
           </div>
         </div>

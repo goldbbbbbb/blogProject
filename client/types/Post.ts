@@ -4,6 +4,7 @@ export interface post {
     content: string;
     category: string;
     numOfLike: number;
+    numOfBookmark: number,
     likedBy: string[];
     author: string;
 }

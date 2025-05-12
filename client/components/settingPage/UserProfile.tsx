@@ -28,7 +28,7 @@ const UserProfile = ({updateSection} : UserProfileProps) => {
     const [currIcon, setCurrIcon] = useState('');
     const [userData, setUserData] = useState<user>(defaultUser);
     const [originalUserData, setOriginalUserData] = useState<user>(defaultUser);
-    const [userDataCollection, setUserDataCollection] = useState<userCollection>({totalLike: 0, totalPost: 0, totalComment: 0});
+    const [userDataCollection, setUserDataCollection] = useState<userCollection>({totalLike: 0, totalPost: 0, totalComment: 0, totalBookmark: 0});
     const userid = localStorage.getItem('userid');
     const token = localStorage.getItem('token');
 
@@ -78,7 +78,7 @@ const UserProfile = ({updateSection} : UserProfileProps) => {
                     });
                     const data = await response.json();
                     if (response.ok && data.success) {
-                        setUserDataCollection({totalLike: data.totalLike, totalPost: data.totalPost, totalComment: data.totalComment});
+                        setUserDataCollection({totalLike: data.totalLike, totalPost: data.totalPost, totalComment: data.totalComment, totalBookmark: data.totalBookmark});
                     } else if (data.invalidToken) {
                         alert(data.message);
                         localStorage.clear();

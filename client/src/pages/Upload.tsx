@@ -12,6 +12,7 @@ const Uploadpage = () => {
         content: '',
         category: '',
         numOfLike: 0,
+        numOfBookmark: 0,
         likedBy: [],
         author: ''        
     }
@@ -63,14 +64,12 @@ const Uploadpage = () => {
         setPostData(prev => ({
             // ...prev: copy the lastest value of formData
             ...prev,
-            [name]: name === 'numOfLike' ? Number(value) : value
+            [name]: (name === 'numOfLike' || name === 'numOfBookmark') ? Number(value) : value
         }));
     }
 
     // keep the input of user during upload/edit in Rich Text Editor
     const OnEditorChange = (content: string, _editor: any) => {
-        console.log('Editor content type:', typeof content);  // 應顯示string
-        console.log('Editor content:', content);              // 應顯示HTML字符串
         setPostData(prev => ({
             // ...prev: copy the lastest value of formData
             ...prev,
@@ -78,62 +77,76 @@ const Uploadpage = () => {
         }));
     }
 
+    // check the input in form is valid and exist or not
+    const validInput = (topic: string, author: string | null, content: string, category: string, numOfLike: number) => {
+        if (topic === '' || !author || content === '' || category === '') return false;
+        if (numOfLike < 0) return false;
+        return true;
+    }
+
     // base on the value of action ('' or edit or delete, '' means upload)
     // submit different HTTP request 
     // upload and edit section: check all section contains valid input
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
         switch (action) {
             case '':
-                try {
-                    console.log(postData.content);
-                    const response = await fetch(`http://localhost:3000/api/uploadPost`, {
-                        method: 'post',
-                        headers: {
-                            'content-type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({topic: postData.topicName, author, content: postData.content, category: postData.category, numOfLike: postData.numOfLike})
-                    });
-                    const data = await response.json();
-                    if (response.ok && data.success) {
-                        alert(`${data.action}成功！`);
-                        navigate('/setting');
-                    } else if (data.invalidToken) {
-                        alert(data.message);
-                        localStorage.clear();
-                        navigate('/');
-                    } else {
-                        alert(data.message);
-                    }           
-                } catch (errorMsg) {
-                    console.error('上傳請求錯誤:', errorMsg);             
+                if (!validInput(postData.topicName, author, postData.content, postData.category, postData.numOfLike)) {
+                    alert('請檢查所有欄位已輸入且有效');
+                } else {
+                    try {
+                        console.log(postData.content);
+                        const response = await fetch(`http://localhost:3000/api/uploadPost`, {
+                            method: 'post',
+                            headers: {
+                                'content-type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({topic: postData.topicName, author, content: postData.content, category: postData.category, numOfLike: postData.numOfLike})
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.success) {
+                            alert(`${data.action}成功！`);
+                            navigate('/setting');
+                        } else if (data.invalidToken) {
+                            alert(data.message);
+                            localStorage.clear();
+                            navigate('/');
+                        } else {
+                            alert(data.message);
+                        }           
+                    } catch (errorMsg) {
+                        console.error('上傳請求錯誤:', errorMsg);             
+                    }
                 }
                 break;
             case 'edit':
-                try {
-                    const response = await fetch(`http://localhost:3000/api/editPost/${id}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'content-type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({topic: postData.topicName, author, content: postData.content, category: postData.category, numOfLike: postData.numOfLike})
-                    });
-                    const data = await response.json();
-                    if (response.ok && data.success) {
-                        alert(`${data.action}成功！`);
-                        navigate('/setting');
-                    } else if (data.invalidToken) {
-                        alert(data.message);
-                        localStorage.clear();
-                        navigate('/');
-                    } else {
-                        alert(data.message);
-                    }           
-                } catch (errorMsg) {
-                    console.error('編輯請求錯誤:', errorMsg);             
+                if (!validInput(postData.topicName, author, postData.content, postData.category, postData.numOfLike)) {
+                    alert('請檢查所有欄位已輸入且有效');
+                } else {
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/editPost/${id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'content-type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({topic: postData.topicName, author, content: postData.content, category: postData.category, numOfLike: postData.numOfLike})
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.success) {
+                            alert(`${data.action}成功！`);
+                            navigate('/setting');
+                        } else if (data.invalidToken) {
+                            alert(data.message);
+                            localStorage.clear();
+                            navigate('/');
+                        } else {
+                            alert(data.message);
+                        }           
+                    } catch (errorMsg) {
+                        console.error('編輯請求錯誤:', errorMsg);             
+                    }
                 }
                 break;
             case 'delete':

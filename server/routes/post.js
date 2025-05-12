@@ -58,16 +58,26 @@ module.exports = function(db) {
             const postsCollection = db.collection('posts');
             const accordingContent = await postsCollection.findOne({_id: objectid});
             let likeStatus;
+            let bookmarkStatus;
             const liked = await postsCollection.findOne({
                 _id: objectid,
                 likedBy: username
+            });
+            const bookmarked = await postsCollection.findOne({
+                _id: objectid,
+                bookmarkedBy: username
             });
             if (liked) {  
                 likeStatus = true;
             } else {
                 likeStatus = false;
             }
-            return res.status(200).json({success: true, accordingContent, likeStatus});
+            if (bookmarked) {
+                bookmarkStatus = true;
+            } else {
+                bookmarkStatus = false;
+            }
+            return res.status(200).json({success: true, accordingContent, likeStatus, bookmarkStatus});
         } catch (errorMsg) {
             return res.status(500).json({success: false, message: '伺服器發生錯誤, 請稍後再試'});
         }

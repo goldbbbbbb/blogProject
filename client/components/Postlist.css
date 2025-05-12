@@ -16,19 +16,19 @@
     padding: 12px;
 }
 
-.postlist-item-numOfLike-container {
+.postlist-item-likeAndBookmark-container {
     display: flex;
     flex-flow: row;
     align-items: center;
     margin-left: auto;
 }
 
-.postlist-item-numOfLike-photo {
+.postlist-item-likeAndBookmark-photo {
     display: flex;
     max-width: 24px;
     max-height: 24px;
 }
 
-.postlist-item-numOfLike-text {
+.postlist-item-likeAndBookmark-text {
     display: flex;
 }

@@ -3,9 +3,10 @@
       "target": "ESNext",
       "module": "ESNext",
       "jsx": "react-jsx",
+      "types": ["jest", "node"],
       "strict": true,
       "moduleResolution": "node",
       "esModuleInterop": true
     },
-    "include": ["src", "components/settingPage/userProfile_components/EditIcon.tsx"]
+    "include": ["src", "__test__", "components/settingPage/userProfile_components/EditIcon.tsx"]
   }

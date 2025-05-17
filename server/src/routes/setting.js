@@ -1,5 +1,5 @@
 const express = require('express');
-const verifyToken = require('../middleware/jwtVerify.js');
+const verifyToken = require('../../middleware/jwtVerify.js');
 
 module.exports = function(db) {
     const router = express.Router();

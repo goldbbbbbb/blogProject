@@ -5,16 +5,17 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const port = 3000;
 
-const authRoutes = require('./routes/auth');
-const postRoutes = require('./routes/post');
-const likeRoutes = require('./routes/like');
-const settingRoutes = require('./routes/setting');
-const avatarRoutes = require('./routes/avatar');
-const commentRoutes = require('./routes/comment');
+const authRoutes = require('./src/routes/auth.js');
+const postRoutes = require('./src/routes/post.js');
+const likeRoutes = require('./src/routes/like.js');
+const settingRoutes = require('./src/routes/setting.js');
+const avatarRoutes = require('./src/routes/avatar.js');
+const commentRoutes = require('./src/routes/comment.js');
 
 const mongoURI = 'mongodb://localhost:27017/blogDatabase';
 const client = new MongoClient(mongoURI);
 let db;
+let server;
 
 async function connectDB() {
     try {
@@ -37,6 +38,7 @@ app.use(express.json());
 // 所有來自 './routes/auth' 的路由都會以 '/api' 作為前綴
 // 例如 auth.js 中的 router.post('/login', ...) 會對應到 '/api/login'
 connectDB().then(() => {
+
     app.use('/api', authRoutes(db));
     app.use('/api', postRoutes(db));
     app.use('/api', likeRoutes(db));
@@ -44,7 +46,7 @@ connectDB().then(() => {
     app.use('/api', avatarRoutes(db));
     app.use('/api', commentRoutes(db));
     
-    app.listen(port, () => {
+    server = app.listen(port, () => {
       console.log(`後端伺服器正在監聽 http://localhost:${port}`);
       console.log('AWS_ACCESS_KEY_ID:', process.env.AWS_ACCESS_KEY_ID);
       console.log('AWS_REGION:', process.env.AWS_REGION);
@@ -54,3 +56,5 @@ connectDB().then(() => {
     console.error("啟動過程中連接資料庫失敗:", err);
     process.exit(1);
   });
+
+module.exports = { app, client, server, connectDB };

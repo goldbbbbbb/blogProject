@@ -1,7 +1,7 @@
 const express = require('express');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const verifyToken = require('../middleware/jwtVerify.js');
+const verifyToken = require('../../middleware/jwtVerify.js');
 
 module.exports = function(db) {
     const router = express.Router();    

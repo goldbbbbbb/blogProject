@@ -1,29 +1,14 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const verifyToken = require('../middleware/jwtVerify.js');
+const verifyToken = require('../../middleware/jwtVerify.js');
+const AuthController = require('../controllers/authControllers.js');
+const AuthRepository = require('../repositories/authRepository.js');
 
-module.exports = function(db) {
+const createAuthRouter = (db) => {
     const router = express.Router();
     const JWT_SECRET = process.env.JWT_SECRET;
-    // verify the username, email and password input is valid or not
-    function validateUsername(username) {
-        return username && username.length >= 8;
-      }
-      
-    function validateEmail(email) {
-    return email && email.includes('@');
-    }
-    
-    function validatePassword(password) {
-    return password && 
-            password.length >= 8 &&
-            /[A-Z]/.test(password) && 
-            /[a-z]/.test(password) && 
-            /[0-9]/.test(password) && 
-            /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    }
-
+    AuthRepository.initialize(db);
 
     // login function: if username exists on the DB and the password is match, approve the login request
     router.post('/login', async (req, res) => {
@@ -92,46 +77,10 @@ module.exports = function(db) {
     // check the username/email/password exist and vaild or not
     // if username or email not exist in the db, approve the register request
     router.post('/register', async (req, res) => {
-        const { username, email, password } = req.body; 
-        console.log('收到注冊請求:', { username, email, password }); 
-
-        if (!validateUsername(username)) {
-            console.error('用戶名不存在 或 密碼格式不符合要求')
-            return res.status(400).json({success: false, message: '用戶名不存在 或 用戶名格式不符合要求'});            
-        }
-        if (!validateEmail(email)) {
-            console.error('電郵不存在 或 電郵格式不符合要求')
-            return res.status(400).json({success: false, message: '電郵不存在 或 電郵格式不符合要求'});                 
-        }
-        if (!validatePassword(password)) {
-            console.error('密碼不存在 或 密碼格式不符合要求')
-            return res.status(400).json({success: false, message: '密碼不存在 或 密碼格式不符合要求'});  
-        }
-
-        try {
-            const usersCollection = db.collection('users');
-            const existUsername = await usersCollection.findOne({username: username});
-            const existEmail = await usersCollection.findOne({email: email});
-            if (!existUsername && !existEmail) {
-                await usersCollection.insertOne({
-                    username: username,
-                    email: email,
-                    password: password
-                })
-                console.log('注冊成功！');
-                return res.status(201).json({success: true, message: '注冊成功'});
-            } else if (existUsername) {
-                console.log('帳號已注冊');
-                return res.status(409).json({success: false, message: '帳號已注冊'});
-            } else if (existEmail) {
-                console.log('電郵已注冊');
-                return res.status(409).json({success: false, message: '電郵已注冊'});                
-            }
-        } catch (errorMsg) {
-            console.error("注冊時資料庫查詢錯誤:", errorMsg);
-            return res.status(500).json({success: false, message: '伺服器發生錯誤，請稍後再試'});
-        }       
+        AuthController.register(req, res);   
     });
 
     return router;
 }
+
+module.exports = createAuthRouter;

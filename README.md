@@ -12,11 +12,13 @@
 7. 展示歷史發文/收藏文章
 
 正在完善的功能
-1. 通知功能
+1. 完善前端跟後端的Unit test/Intergration test
+2. 完善後端RestfulAPI結構
+3. 通知功能
 
 使用語言及工具
 - Frontend: TypeScript/React
 - Backend: Node.js/Express.js
 - Database: MongoDB
 - Cloud Storage: AWS S3
-- Tools: tinyMCE/JWT
+- Tools: tinyMCE/JWT/supertest

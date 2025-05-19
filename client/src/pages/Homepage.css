@@ -27,6 +27,13 @@
     justify-content: center;
     border: 1px solid grey;
     background: none;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.homepage-content-navigationbar-item:hover{
+    transform: scale(1.05);
+    background-color: yellow;
 }
 
 .homepage-content-topic-container {

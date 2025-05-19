@@ -10,6 +10,7 @@ import Uploadpage from './pages/Upload';
 import Usersettingpage from './pages/Setting';
 import Content from './pages/Content';
 import Searchtopic from './pages/Search';
+import TestPage from './pages/Test';
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem('token');
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route element={<ProtectedRoute />}>
           <Route path='/homepage' element={<Homepage />}/>
           <Route path='/success' element={<Successpage />}/>
+          <Route path='/test' element={<TestPage />}/>
           <Route path='/upload/:id?' element={<Uploadpage />}/>
           <Route path='/setting' element={<Usersettingpage />}/>
           <Route path='/content/:id' element={<Content />}/>

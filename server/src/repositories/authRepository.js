@@ -1,4 +1,5 @@
 let db;
+const jwt = require('jsonwebtoken');
 
 module.exports = {
 
@@ -39,5 +40,39 @@ module.exports = {
     const result = await usersCollection.insertOne(newUser);
     const createdUser = { _id: result.insertedId, ...newUser }
     return createdUser;
+  },
+
+  async loginValidation(username, password) {
+    const usersCollection = db.collection('users');
+    const existUser = await usersCollection.findOne({ username });
+    // if user not exist, return
+    if (!existUser) {
+      return {
+        existUser: false,
+        matchPassword: false
+      }
+    }
+    // compare the password
+    let matchPassword = (existUser.password === password);
+    return {
+      existUser: true,
+      matchPassword: matchPassword
+    }
+  },
+
+  async login(username) {
+    const usersCollection = db.collection('users');
+    const user = await usersCollection.findOne({ username });
+    const JWT_SECRET = process.env.JWT_SECRET;
+    console.log(JWT_SECRET);
+    const token = jwt.sign(
+      {
+          userId: user._id,
+          username: user.username
+      },
+      JWT_SECRET,
+      {expiresIn: '24h'}
+    );
+    return token;
   }
 }

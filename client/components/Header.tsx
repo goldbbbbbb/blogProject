@@ -37,6 +37,7 @@ const Header = () => {
                 </div>
             </div>
             <div className='header-right-container'>
+                <button onClick={() => route('test')}>測試頁面</button>
                 <button onClick={() => route('upload')} className='header-right-button'>上傳</button>
                 <button onClick={() => route('setting')} className='header-right-button'>用戶設定</button>
                 <button onClick={logoutRoute} className='header-right-button'>登出</button>

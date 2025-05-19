@@ -1,0 +1,52 @@
+.gallery-container {
+    width: 80%; /* 畫廊容器寬度 */
+    max-width: 800px;
+    margin: 20px auto;
+    position: relative; /* 用於定位圓點 */
+    overflow: hidden; /* 隱藏超出部分的圖片 */
+}
+
+.image-scroller {
+    display: flex; /* 使用 Flexbox 使圖片水平排列 */
+    overflow-x: auto; /* 啟用水平滾動 */
+    scroll-snap-type: x mandatory; /* 使滾動停在每張圖片的邊緣 */
+    -webkit-overflow-scrolling: touch; /* 在 iOS 上實現更流暢的滾動 */
+    scrollbar-width: none; /* 隱藏 Firefox 滾動條 */
+    -ms-overflow-style: none;  /* 隱藏 IE/Edge 滾動條 */
+}
+
+.image-scroller::-webkit-scrollbar {
+    display: none; /* 隱藏 Chrome/Safari 滾動條 */
+}
+
+.image-item {
+    flex: 0 0 100%; /* 每個圖片項佔滿容器寬度，不縮小，不放大 */
+    scroll-snap-align: start; /* 滾動時對齊到圖片項的開始位置 */
+    box-sizing: border-box; /* 確保 padding 和 border 不影響寬度 */
+}
+
+.image-item img {
+    display: block;
+    width: 100%; /* 圖片寬度填滿 image-item */
+    height: auto; /* 高度自動調整以保持比例 */
+}
+
+.navigation-dots {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #bbb; /* 默認圓點顏色 */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* 圓點顏色過渡 */
+}
+
+.dot.active {
+    background-color: #717171; /* 選中圓點顏色 */
+}

@@ -1,28 +1,58 @@
 const request = require('supertest'); // 導入 supertest
-const { app, client, connectDB } = require('../../server'); // 導入您的 Express 應用實例 (根據實際路徑調整)
+const { app, startServer, client, connectDB } = require('../../server'); // 導入您的 Express 應用實例 (根據實際路徑調整)
 // 可能還需要導入資料庫連接或清理函數
 
-const db = client.db('blogDatabase'); // 根據您的實際資料庫名稱修改
+let server;
+let db;
 
 describe('POST /register', () => {
 
     beforeAll(async () => {
         await connectDB(); // 等待資料庫連接和路由掛載完成
+        db = client.db('blogDatabase'); // 根據您的實際資料庫名稱修改
+        server = startServer(0);
         console.log('伺服器準備就緒，資料庫已連接，路由已掛載。'); // 添加日誌確認
+    });
+
+    // 在每個測試執行前清理資料庫
+    beforeEach(async () => {
+        console.log('Before test: Cleaning up database...'); // 添加日誌
+        // 在每個測試開始前，確保清理掉所有測試數據
+        await db.collection('users').deleteMany({
+             $or: [
+                 {username: { $regex: /^registerTestUser_/ }}, // 刪除所有以 registerTestUser_ 開頭的用戶
+                 {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
+             ]
+         });
+         const usersCount = await db.collection('users').countDocuments({});
+         console.log(`Before test (after cleanup): Users in DB: ${usersCount}`); // 添加日誌確認清理結果
     });
 
     // 在每個測試案例後清理資料庫
     afterEach(async () => {
         // 清理在測試中創建的用戶數據
         await db.collection('users').deleteMany({
-            username: { $regex: /^testuser_/ }, // 刪除所有以 testuser_ 開頭的用戶
-            email: { $regex: /^test_/ } // 刪除所有以 test_ 開頭的電郵
+            $or: [
+                {username: { $regex: /^registerTestUser_/ }}, // 刪除所有以 registerTestUser_ 開頭的用戶
+                {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
+            ]
         });
     });
 
+    afterAll(async () => {
+        if (startServer) { // 假設您的 server.js 導出了 server 實例
+            await new Promise(resolve => server.close(resolve));
+            console.log('HTTP server closed.');
+        }
+        if (client && client.topology && client.topology.isConnected()) {
+             await client.close();
+             console.log('MongoDB client closed.');
+        }
+    })
+
     test('應該成功註冊一個新用戶並返回 201 狀態碼', async () => {
         // 準備測試數據 (使用隨機數據確保唯一性)
-        const testUsername = `testuser_${Date.now()}`;
+        const testUsername = `registerTestUser_${Date.now()}`;
         const testEmail = `test_${Date.now()}@example.com`;
         const testPassword = 'Password123!';
 
@@ -43,13 +73,13 @@ describe('POST /register', () => {
 
     test('it should return 409 because user exist', async() => {
         // 準備測試數據 (使用隨機數據確保唯一性)
-        const existUsername = `testuser_${Date.now()}`;
-        const existEmail = `test_${Date.now()}@example.com`;
+        const existUsername = 'registerTestUser_123';
+        const existEmail = 'test_123@example.com';
         const existPassword = 'Password123!';
 
         await db.collection('users').insertOne({
             username: existUsername,
-            email: 'test_123@example.com',
+            email: existEmail,
             password: existPassword
         });
 
@@ -70,15 +100,34 @@ describe('POST /register', () => {
 
     test('it should return 409 because email exist', async() => {
         // 準備測試數據 (使用隨機數據確保唯一性)
-        const existUsername = `testuser_${Date.now()}`;
-        const existEmail = `test_${Date.now()}@example.com`;
+        const existUsername = 'registerTestUser_123';
+        const existEmail = 'test_123@example.com';
         const existPassword = 'Password123!';
+        const existUsername2 = 'registerTestUser_456';
 
+        await db.collection('users').deleteOne({ username: existUsername });
+        await db.collection('users').deleteOne({ username: existUsername2 });
+        await db.collection('users').deleteOne({ email: existEmail });
+        
         await db.collection('users').insertOne({
-            username: 'testuser_123',
+            username: existUsername2,
             email: existEmail,
             password: existPassword
         });
+        console.log('Test setup: InsertOne completed.');
+
+        // *** 添加驗證步驟：立即查詢剛剛插入的用戶 ***
+        console.log(`Test setup: Verifying inserted user with email: ${existEmail}`);
+
+        await new Promise(resolve => setTimeout(resolve, 50));
+        console.log('Test setup: Added 50ms delay.');
+
+        const insertedUser = await db.collection('users').findOne({ email: existEmail });
+        // 使用斷言確保用戶被找到
+        expect(insertedUser).not.toBeNull();
+        expect(insertedUser.email).toBe(existEmail);
+        console.log('Test setup: Verification successful. User found.');
+        // *** 驗證步驟結束 ***
 
         // 使用 supertest 發送 POST 請求
         const response = await request(app) // 將 app 實例傳給 supertest
@@ -95,9 +144,9 @@ describe('POST /register', () => {
         expect(response.body).toHaveProperty('message', '電郵已注冊');
     });
     
-    test('it should return 400 because email is invalid', async() => {
+    test('it should return 400 because username is invalid', async() => {
         const invalidUsername = `test`;
-        const invalidEmail = `test_${Date.now()}@example.com`;
+        const invalidEmail = `test_123@example.com`;
         const invalidPassword = 'Password123!';
         const response = await request(app) // 將 app 實例傳給 supertest
             .post('/api/register') // 指定測試的路由
@@ -113,8 +162,8 @@ describe('POST /register', () => {
     });
 
     test('it should return 400 because email is invalid', async() => {
-        const invalidUsername = `testuser_${Date.now()}`;
-        const invalidEmail = `test_${Date.now()}example.com`;
+        const invalidUsername = `registerTestUser_123`;
+        const invalidEmail = `test_123example.com`;
         const invalidPassword = 'Password123!';
         const response = await request(app) // 將 app 實例傳給 supertest
             .post('/api/register') // 指定測試的路由
@@ -130,8 +179,8 @@ describe('POST /register', () => {
     });
     
     test('it should return 400 because password is invalid', async() => {
-        const invalidUsername = `testuser_${Date.now()}`;
-        const invalidEmail = `test_${Date.now()}@example.com`;
+        const invalidUsername = `registerTestUser_123`;
+        const invalidEmail = `test_123@example.com`;
         const invalidPassword = 'Password123';
         const response = await request(app) // 將 app 實例傳給 supertest
             .post('/api/register') // 指定測試的路由
@@ -148,7 +197,7 @@ describe('POST /register', () => {
 
     test('it should return 400 because username is empty', async() => {
         const invalidUsername = '';
-        const invalidEmail = `test_${Date.now()}@example.com`;
+        const invalidEmail = `test_123@example.com`;
         const invalidPassword = 'Password123';
         const response = await request(app) // 將 app 實例傳給 supertest
             .post('/api/register') // 指定測試的路由
@@ -164,7 +213,7 @@ describe('POST /register', () => {
     }); 
     
     test('it should return 400 because email is empty', async() => {
-        const invalidUsername = `testuser_${Date.now()}`;
+        const invalidUsername = `registerTestUser_123`;
         const invalidEmail = '';
         const invalidPassword = 'Password123';
         const response = await request(app) // 將 app 實例傳給 supertest
@@ -181,8 +230,8 @@ describe('POST /register', () => {
     });            
 
     test('it should return 400 because password is empty', async() => {
-        const invalidUsername = `testuser_${Date.now()}`;
-        const invalidEmail = `test_${Date.now()}@example.com`;
+        const invalidUsername = `registerTestUser_123`;
+        const invalidEmail = `test_123@example.com`;
         const invalidPassword = '';
         const response = await request(app) // 將 app 實例傳給 supertest
             .post('/api/register') // 指定測試的路由

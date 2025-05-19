@@ -7,11 +7,11 @@ class InputError extends Error {
 }
 
 class BusinessError extends Error {
-  constructor(message, code) {
+  constructor(message, code, status) {
     super(message);
     this.name = 'BusinessError';
     this.code = code; // 例如 'USERNAME_EXISTS'
-    this.status = 409; // 預設 HTTP 狀態碼
+    this.status = status; // 預設 HTTP 狀態碼
   }
 }
 

@@ -58,10 +58,13 @@ describe('POST /register', () => {
         const successUsername = `loginTestUser_123`;
         const successPassowrd = '!Password123';
 
-        testDb.collection('users').insertOne({
+        await testDb.collection('users').insertOne({
             username: successUsername,
             password: successPassowrd
         })  
+
+        const insertedUser = await testDb.collection('users').findOne({ username: successUsername });
+        expect(insertedUser).not.toBeNull(); // 驗證找到使用者        
         
         const response = await request(app)
             .post('/api/login')

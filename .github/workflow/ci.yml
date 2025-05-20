@@ -1,0 +1,44 @@
+# 工作流程的名稱
+name: CI Pipeline
+
+# 定義工作流程的觸發時機
+# 這個範例表示在 push 或 pull_request 事件發生在 main 分支時觸發
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# 定義一個或多個任務 (Jobs)
+jobs:
+  # 任務的 ID，可以自定義
+  build-and-test:
+    # 指定任務在哪種作業系統環境下運行
+    runs-on: ubuntu-latest
+
+    # 定義任務要執行的步驟 (Steps)
+    steps:
+      # 步驟 1: 檢查程式碼
+      # 使用 actions/checkout@v4 action 將您的程式碼庫檢查到 Runner 環境中
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步驟 2: 設定 Node.js 環境
+      # 使用 actions/setup-node@v4 action 設定指定版本的 Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0' # 您可以根據需要修改 Node.js 版本
+
+      # 步驟 3: 安裝依賴
+      # 運行 npm install 命令安裝專案所需的套件
+      - name: Install Dependencies
+        run: npm install
+
+      # 步驟 4: 執行測試
+      # 運行 npm test 命令執行專案的測試
+      # 假設您的 package.json 中定義了 "test" 腳本，並且該腳本會運行所有位於 _test_ 目錄下的測試檔案
+      - name: Run Tests
+        run: npm test
+
+      # 您可以根據需要添加更多步驟，例如代碼掃描、部署等

@@ -16,6 +16,13 @@ jobs:
     # 指定任務在哪種作業系統環境下運行
     runs-on: ubuntu-latest
 
+    services: # <-- 定義服務容器
+      mongodb: # <-- 服務名稱，您的測試程式碼將使用這個名稱作為主機名
+        image: mongo:latest # <-- 使用最新的官方 MongoDB 映像檔
+        ports:
+          - 27017:27017 # <-- 將容器內部的 27017 埠映射到虛擬機的 27017 埠
+        # options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5 # 可選：健康檢查
+
     # 定義任務要執行的步驟 (Steps)
     steps:
       # 步驟 1: 檢查程式碼
@@ -42,5 +49,12 @@ jobs:
       - name: Run Tests
         run: npm test
         working-directory: ./server
+        env: # <-- 設定環境變數，讓測試程式碼知道如何連接資料庫
+          # 在 services 中，服務名稱 (mongodb) 可以作為主機名
+          # 埠號是映射到虛擬機的埠號 (27017)
+          # 資料庫名稱可以根據您的測試需要設定
+          MONGODB_URI: mongodb://localhost:27017 # <-- 連接到 localhost:27017，資料庫名稱為 blogDatabase_test
+          # 如果您的測試程式碼需要單獨的 DB_NAME 環境變數
+          # DB_NAME: blogDatabase_test
 
       # 您可以根據需要添加更多步驟，例如代碼掃描、部署等

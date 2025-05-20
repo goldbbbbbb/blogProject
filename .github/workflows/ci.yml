@@ -5,9 +5,9 @@ name: CI Pipeline
 # 這個範例表示在 push 或 pull_request 事件發生在 main 分支時觸發
 on:
   push:
-    branches: [ main ]
+    branches: [ feature-automaticTest ]
   pull_request:
-    branches: [ main ]
+    branches: [ feature-automaticTest ]
 
 # 定義一個或多個任務 (Jobs)
 jobs:

@@ -104,30 +104,12 @@ describe('POST /register', () => {
         const existEmail = 'test_123@example.com';
         const existPassword = 'Password123!';
         const existUsername2 = 'registerTestUser_456';
-
-        await db.collection('users').deleteOne({ username: existUsername });
-        await db.collection('users').deleteOne({ username: existUsername2 });
-        await db.collection('users').deleteOne({ email: existEmail });
         
         await db.collection('users').insertOne({
             username: existUsername2,
             email: existEmail,
             password: existPassword
         });
-        console.log('Test setup: InsertOne completed.');
-
-        // *** 添加驗證步驟：立即查詢剛剛插入的用戶 ***
-        console.log(`Test setup: Verifying inserted user with email: ${existEmail}`);
-
-        await new Promise(resolve => setTimeout(resolve, 50));
-        console.log('Test setup: Added 50ms delay.');
-
-        const insertedUser = await db.collection('users').findOne({ email: existEmail });
-        // 使用斷言確保用戶被找到
-        expect(insertedUser).not.toBeNull();
-        expect(insertedUser.email).toBe(existEmail);
-        console.log('Test setup: Verification successful. User found.');
-        // *** 驗證步驟結束 ***
 
         // 使用 supertest 發送 POST 請求
         const response = await request(app) // 將 app 實例傳給 supertest

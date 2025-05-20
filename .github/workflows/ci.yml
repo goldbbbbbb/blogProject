@@ -54,6 +54,7 @@ jobs:
           # 埠號是映射到虛擬機的埠號 (27017)
           # 資料庫名稱可以根據您的測試需要設定
           MONGODB_URI: mongodb://localhost:27017 # <-- 連接到 localhost:27017，資料庫名稱為 blogDatabase_test
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           # 如果您的測試程式碼需要單獨的 DB_NAME 環境變數
           # DB_NAME: blogDatabase_test
 

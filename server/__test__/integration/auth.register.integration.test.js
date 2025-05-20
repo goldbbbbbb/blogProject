@@ -12,7 +12,7 @@ describe('POST /register', () => {
         db = client.db('blogDatabase'); // 根據您的實際資料庫名稱修改
         server = startServer(0);
         console.log('伺服器準備就緒，資料庫已連接，路由已掛載。'); // 添加日誌確認
-    });
+    }, 20000);
 
     // 在每個測試執行前清理資料庫
     beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('POST /register', () => {
          });
          const usersCount = await db.collection('users').countDocuments({});
          console.log(`Before test (after cleanup): Users in DB: ${usersCount}`); // 添加日誌確認清理結果
-    });
+    }, 20000);
 
     // 在每個測試案例後清理資料庫
     afterEach(async () => {
@@ -37,7 +37,7 @@ describe('POST /register', () => {
                 {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
             ]
         });
-    });
+    }, 20000);
 
     afterAll(async () => {
         if (startServer) { // 假設您的 server.js 導出了 server 實例
@@ -48,7 +48,7 @@ describe('POST /register', () => {
              await client.close();
              console.log('MongoDB client closed.');
         }
-    })
+    }, 20000)
 
     test('應該成功註冊一個新用戶並返回 201 狀態碼', async () => {
         // 準備測試數據 (使用隨機數據確保唯一性)

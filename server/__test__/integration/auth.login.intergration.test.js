@@ -1,27 +1,22 @@
 const request = require('supertest'); // 導入 supertest
 const { app, startServer, client, connectDB } = require('../../server'); // 導入您的 Express 應用實例 (根據實際路徑調整)
-// 可能還需要導入資料庫連接或清理函數
 
 let server;
 let testDb;
 let testDbName;
-// const db = client.db('blogDatabase'); // 根據您的實際資料庫名稱修改
 
 describe('POST /register', () => {
 
     beforeAll(async () => {
-        testDbName = `blogDatabase_test_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        testDbName = `blogDatabase_test_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`; // 確保連接至一個完全隨機命名的db
         testDb = await connectDB(testDbName); // 等待資料庫連接和路由掛載完成
-        server = startServer(0);
-        await new Promise(resolve => server.on('listening', resolve));
-        console.log(`Test beforeAll: Server started and listening on port ${server.address().port}`);
+        server = startServer(0); // 啟動server
+        await new Promise(resolve => server.on('listening', resolve)); // 確保在beforeAll結束前server已經啟動
         console.log('伺服器準備就緒，資料庫已連接，路由已掛載。'); // 添加日誌確認
     });
 
     // 在每個測試執行前清理資料庫
     beforeEach(async () => {
-        console.log('Before test: Cleaning up database...'); // 添加日誌
-        // 在每個測試開始前，確保清理掉所有測試數據
         await testDb.collection('users').deleteMany({
              $or: [
                  {username: { $regex: /^loginTestUser_/ }}, // 刪除所有以 loginTestUser_ 開頭的用戶
@@ -35,12 +30,12 @@ describe('POST /register', () => {
     // 在每個測試案例後清理資料庫
     afterEach(async () => {
         // 清理在測試中創建的用戶數據
-        await testDb.collection('users').deleteMany({
-            $or: [
-                {username: { $regex: /^loginTestUser_/ }}, // 刪除所有以 loginTestUser_ 開頭的用戶
-                {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
-            ]
-        });
+        // await testDb.collection('users').deleteMany({
+        //     $or: [
+        //         {username: { $regex: /^loginTestUser_/ }}, // 刪除所有以 loginTestUser_ 開頭的用戶
+        //         {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
+        //     ]
+        // });
     });
 
     afterAll(async () => {

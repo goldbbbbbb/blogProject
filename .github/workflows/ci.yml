@@ -34,11 +34,13 @@ jobs:
       # 運行 npm install 命令安裝專案所需的套件
       - name: Install Dependencies
         run: npm install
+        working-directory: ./server
 
       # 步驟 4: 執行測試
       # 運行 npm test 命令執行專案的測試
       # 假設您的 package.json 中定義了 "test" 腳本，並且該腳本會運行所有位於 _test_ 目錄下的測試檔案
       - name: Run Tests
         run: npm test
+        working-directory: ./server
 
       # 您可以根據需要添加更多步驟，例如代碼掃描、部署等

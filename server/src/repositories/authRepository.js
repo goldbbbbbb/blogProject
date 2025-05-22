@@ -1,5 +1,6 @@
 let db;
 const jwt = require('jsonwebtoken');
+const Password = require('../../utils/password.utils.js')
 
 module.exports = {
 
@@ -25,16 +26,19 @@ module.exports = {
   // add user into db
   async create(data) {
     const { username, email, password } = data;
+    const hashedPassword = await Password.hashPassword(password);
     const newUser = {
         username: username, 
         email: email,    
-        password: password, 
-        iconURL: '',  
-        birthday: '', 
-        education: '',
-        gender: '',   
-        summary: '',  
-        workexperience: ''
+        password: hashedPassword, 
+        iconURL: '',
+        profile: {
+          birthday: '', 
+          education: '',
+          gender: '',   
+          summary: '',  
+          workexperience: ''
+        }  
     };
     const usersCollection = db.collection('users');
     const result = await usersCollection.insertOne(newUser);
@@ -42,6 +46,7 @@ module.exports = {
     return createdUser;
   },
 
+  // check the user exist or not => compare the input match with DB or not
   async loginValidation(username, password) {
     const usersCollection = db.collection('users');
     const existUser = await usersCollection.findOne({ username });
@@ -52,8 +57,10 @@ module.exports = {
         matchPassword: false
       }
     }
-    // compare the password
-    let matchPassword = (existUser.password === password);
+    // compare the hashed password in db & user password input
+    console.log(existUser.password);
+    let matchPassword = await Password.verifyHashedPassword(password, existUser.password);
+    console.log('matchresult:', matchPassword);
     return {
       existUser: true,
       matchPassword: matchPassword

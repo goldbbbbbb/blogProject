@@ -1,11 +1,12 @@
 const request = require('supertest'); // 導入 supertest
 const { app, startServer, client, connectDB } = require('../../server'); // 導入您的 Express 應用實例 (根據實際路徑調整)
+const Password = require('../../utils/password.utils.js')
 
 let server;
 let testDb;
 let testDbName;
 
-describe('POST /register', () => {
+describe('POST /login', () => {
 
     beforeAll(async () => {
         testDbName = `blogDatabase_test_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`; // 確保連接至一個完全隨機命名的db
@@ -27,19 +28,13 @@ describe('POST /register', () => {
          console.log(`Before test (after cleanup): Users in DB: ${usersCount}`); // 添加日誌確認清理結果
     });
 
-    // 在每個測試案例後清理資料庫
+    // 如有需要，在每個測試案例後清理資料庫
     afterEach(async () => {
-        // 清理在測試中創建的用戶數據
-        // await testDb.collection('users').deleteMany({
-        //     $or: [
-        //         {username: { $regex: /^loginTestUser_/ }}, // 刪除所有以 loginTestUser_ 開頭的用戶
-        //         {email: { $regex: /^test_/ }} // 刪除所有以 test_ 開頭的電郵
-        //     ]
-        // });
     });
 
+    // 在test完成後關閉server跟db
     afterAll(async () => {
-        if (startServer) { // 假設您的 server.js 導出了 server 實例
+        if (startServer) {
             await new Promise(resolve => server.close(resolve));
             console.log('HTTP server closed.');
         }
@@ -52,10 +47,11 @@ describe('POST /register', () => {
     test('it should return 200 because the login success', async () => {
         const successUsername = `loginTestUser_123`;
         const successPassowrd = '!Password123';
-
+        const hashedSuccessPassword = await Password.hashPassword(successPassowrd);
+        
         await testDb.collection('users').insertOne({
             username: successUsername,
-            password: successPassowrd
+            password: hashedSuccessPassword
         })     
         
         const response = await request(app)
@@ -75,18 +71,20 @@ describe('POST /register', () => {
     })
 
     test('it should return 401 because the password is wrong', async () => {
-        const wrongUsername = `loginTestUser_123`;
+        const correctUsername = `loginTestUser_123`;
         const wrongPassowrd = '!Password123';
+        const correctPassword = '!Password456';
+        const hashedCorrectPassword = await Password.hashPassword(correctPassword);
 
         await testDb.collection('users').insertOne({
-            username: wrongUsername,
-            password: '!Password456'
+            username: correctUsername,
+            password: hashedCorrectPassword
         })
 
         const response = await request(app)
             .post('/api/login')
             .send({
-                username: wrongUsername,
+                username: correctUsername,
                 password: wrongPassowrd
             })
             .expect(401);
